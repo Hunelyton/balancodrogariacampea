@@ -169,8 +169,8 @@ export class HomeComponent implements OnInit {
     const cadastro = this.cadastro();
 
 
-    const cadastroMap = new Map(cadastro.map(p => [String(p.codigo).replace(/^0+/, ''), p]));
-    const contagemMap = new Map(contagem.map(c => [String(c.codigo).replace(/^0+/, ''), c]));
+    const cadastroMap = new Map(cadastro.map(p => [this.normalizeCodigo(p.codigo), p]));
+    const contagemMap = new Map(contagem.map(c => [this.normalizeCodigo(c.codigo), c]));
 
 
     const divergencias: any[] = [];
@@ -178,7 +178,7 @@ export class HomeComponent implements OnInit {
 
 
     contagem.forEach(c => {
-      const cod = String(c.codigo).replace(/^0+/, '');
+      const cod = this.normalizeCodigo(c.codigo);
       const cad = cadastroMap.get(cod);
 
 
@@ -207,7 +207,7 @@ export class HomeComponent implements OnInit {
 
     // Verifica quais produtos do cadastro não estão na contagem
     cadastro.forEach(cad => {
-      const cod = String(cad.codigo).replace(/^0+/, '');
+      const cod = this.normalizeCodigo(cad.codigo);
       if (!contagemMap.has(cod) && Number(cad.qtde ?? 0) > 0) {
         naoContados.push(cad);
       }
@@ -399,6 +399,18 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  private normalizeCodigo(value: any): string {
+    if (value === undefined || value === null) return '';
+    const base = String(value)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+    const alfanumerico = base.replace(/[^0-9A-Z]/g, '');
+    const semZeros = alfanumerico.replace(/^0+/, '');
+    return semZeros || alfanumerico || base;
+  }
+
   converterParaFloat(valor: any): number {
     if (!valor) return 0;
     return parseFloat(
@@ -443,17 +455,18 @@ export class HomeComponent implements OnInit {
     try {
       const files = event.files as File[];
 
-      const normalizarCodigo = (v: any) =>
-        String(v ?? '').trim().replace(/^0+/, '');
+      const normalizarCodigo = (v: any) => this.normalizeCodigo(v);
 
       // Acumulador por código
       const contagemMap = new Map<string, any>();
 
       this.indexedDBService.getItem('cadastroProdutos').then((cadastroProdutos) => {
         // Indexar por código normalizado e por cada EAN individual
-        const codigoMap = new Map(
-          (cadastroProdutos || []).map((p: any) => [normalizarCodigo(p.codigo), p])
-        );
+        const codigoMap = new Map<string, any>();
+        (cadastroProdutos || []).forEach((p: any) => {
+          const key = normalizarCodigo(p?.codigo);
+          if (key) codigoMap.set(key, p);
+        });
         const normalizarEan = (v: any) => String(v ?? '').trim().replace(/\D/g, '');
         const eanMap = new Map<string, any>();
         (cadastroProdutos || []).forEach((p: any) => {
@@ -478,7 +491,8 @@ export class HomeComponent implements OnInit {
 
                   const prod = codigoMap.get(keyCodigo) ?? eanMap.get(keyEan);
                   const semCadastro = !prod;
-                  const contKey = prod ? normalizarCodigo(prod.codigo) : (keyCodigo || keyEan);
+                  const contKeyBase = prod ? normalizarCodigo(prod.codigo) : keyCodigo;
+                  const contKey = contKeyBase || keyEan || normalizarCodigo(raw) || raw;
 
                   let atual = contagemMap.get(contKey);
                   if (!atual) {
@@ -931,7 +945,7 @@ export class HomeComponent implements OnInit {
 
   addProdutoContagem(rawEan: string, rawQtde: string) {
     try {
-      const normalizeCodigo = (v: any) => String(v ?? '').trim().replace(/^0+/, '');
+      const normalizeCodigo = (v: any) => this.normalizeCodigo(v);
       const normalizeEan = (v: any) => String(v ?? '').trim().replace(/\D/g, '');
 
       const eanKey = normalizeEan(rawEan);
@@ -959,7 +973,7 @@ export class HomeComponent implements OnInit {
       const prod = eanMap.get(eanKey);
 
       const lista = [...this.contagemDetalhada()];
-      const targetKey = prod ? normalizeCodigo(prod.codigo) : eanKey;
+      const targetKey = (prod ? normalizeCodigo(prod.codigo) : '') || eanKey;
       const idx = lista.findIndex(
         (i) => normalizeCodigo(i?.codigo) === targetKey || normalizeEan(i?.ean) === eanKey
       );
@@ -1015,7 +1029,7 @@ export class HomeComponent implements OnInit {
 
   removerProdutoContagem(item: any) {
     try {
-      const normalizeCodigo = (v: any) => String(v ?? '').trim().replace(/^0+/, '');
+      const normalizeCodigo = (v: any) => this.normalizeCodigo(v);
       const normalizeEan = (v: any) => String(v ?? '').trim().replace(/\D/g, '');
 
       const cod = normalizeCodigo(item?.codigo);
