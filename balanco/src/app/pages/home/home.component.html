@@ -314,7 +314,7 @@
     <p-table
       #dtContagem
       *ngIf="contagemDetalhada().length"
-      [value]="contagemDetalhada()"
+      [value]="contagemFiltrada()"
       [paginator]="true"
       [rows]="10"
       [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada']"
@@ -341,6 +341,26 @@
               (click)="addProdutoContagem(novoEan.value, novaQtde.value); novoEan.value=''; novaQtde.value='';"
             ></button>
           </div>
+          <div class="flex align-items-center gap-3 flex-wrap">
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                inputId="contagem-controlados"
+                [binary]="true"
+                [ngModel]="mostrarControladosContagem()"
+                (ngModelChange)="mostrarControladosContagem.set($event)"
+              ></p-checkbox>
+              <label for="contagem-controlados" class="text-sm">Mostrar controlados</label>
+            </div>
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                inputId="contagem-nao-cadastrados"
+                [binary]="true"
+                [ngModel]="mostrarNaoCadastradosContagem()"
+                (ngModelChange)="mostrarNaoCadastradosContagem.set($event)"
+              ></p-checkbox>
+              <label for="contagem-nao-cadastrados" class="text-sm">Mostrar não cadastrados</label>
+            </div>
+          </div>
         </div>
       </ng-template>
       <ng-template pTemplate="header">
@@ -356,8 +376,8 @@
           <th pSortableColumn="qtdeEscaneada">
             QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
           </th>
-          <ng-container *ngIf="getEanIndexesWithData(contagemDetalhada()).length > 0">
-            <ng-container *ngFor="let idx of getEanIndexesWithData(contagemDetalhada()); let i = index">
+          <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
+            <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
               <th *ngIf="!isAlpha7() || i === 0">
                 {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
               </th>
@@ -383,8 +403,8 @@
             />
           </td>
           <ng-container *ngIf="splitEans(item.ean) as eans">
-            <ng-container *ngIf="getEanIndexesWithData(contagemDetalhada()).length > 0">
-              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemDetalhada()); let i = index">
+            <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
+              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
                 <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
               </ng-container>
             </ng-container>
@@ -434,13 +454,13 @@
     <p-table
       #dtDivergencias
       *ngIf="divergencias().length"
-      [value]="divergencias()"
+      [value]="divergenciasFiltradas()"
       [paginator]="true"
       [rows]="10"
       [globalFilterFields]="['fabricante', 'codigo', 'ean', 'descricao', 'secao', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
     >
       <ng-template pTemplate="caption">
-        <div class="flex justify-content-between">
+        <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input
@@ -450,6 +470,26 @@
               placeholder="Pesquisar geral"
             />
           </span>
+          <div class="flex align-items-center gap-3 flex-wrap">
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                inputId="divergencias-controlados"
+                [binary]="true"
+                [ngModel]="mostrarControladosDivergencias()"
+                (ngModelChange)="mostrarControladosDivergencias.set($event)"
+              ></p-checkbox>
+              <label for="divergencias-controlados" class="text-sm">Mostrar controlados</label>
+            </div>
+            <div class="flex align-items-center gap-2">
+              <p-checkbox
+                inputId="divergencias-nao-cadastrados"
+                [binary]="true"
+                [ngModel]="mostrarNaoCadastradosDivergencias()"
+                (ngModelChange)="mostrarNaoCadastradosDivergencias.set($event)"
+              ></p-checkbox>
+              <label for="divergencias-nao-cadastrados" class="text-sm">Mostrar não cadastrados</label>
+            </div>
+          </div>
         </div>
       </ng-template>
       <ng-template pTemplate="header">
@@ -460,7 +500,7 @@
           <th pSortableColumn="codigo">
             {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
           </th>
-          <ng-container *ngIf="getEanIndexesWithData(divergencias()) as eanIdxs">
+          <ng-container *ngIf="getEanIndexesWithData(divergenciasFiltradas()) as eanIdxs">
             <ng-container *ngFor="let idx of eanIdxs; let i = index">
               <th *ngIf="!isAlpha7() || i === 0">
                 {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
@@ -491,7 +531,7 @@
           <td *ngIf="!isAlpha7()">{{ item.fabricante }}</td>
           <td>{{ item.codigo }}</td>
           <ng-container *ngIf="splitEans(item.ean) as eans">
-            <ng-container *ngIf="getEanIndexesWithData(divergencias()) as eanIdxs">
+            <ng-container *ngIf="getEanIndexesWithData(divergenciasFiltradas()) as eanIdxs">
               <ng-container *ngFor="let idx of eanIdxs; let i = index">
                 <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
               </ng-container>
