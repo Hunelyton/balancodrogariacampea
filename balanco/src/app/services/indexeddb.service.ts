@@ -7,9 +7,22 @@ export class IndexedDBService {
     this.storeName = storeName;
   }
 
+  private getIndexedDB(): IDBFactory | undefined {
+    if (typeof globalThis !== 'undefined' && 'indexedDB' in globalThis) {
+      return (globalThis as unknown as { indexedDB?: IDBFactory }).indexedDB;
+    }
+    return undefined;
+  }
+
   private openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName);
+      const indexedDBRef = this.getIndexedDB();
+      if (!indexedDBRef) {
+        reject(new Error('IndexedDB is not available in this environment.'));
+        return;
+      }
+
+      const request = indexedDBRef.open(this.dbName);
 
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const db = (event.target as IDBOpenDBRequest).result;
