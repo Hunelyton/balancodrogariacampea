@@ -11,7 +11,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TabViewModule } from 'primeng/tabview';
+import { CheckboxModule } from 'primeng/checkbox';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import {
   HttpClientModule,
   provideHttpClient,
@@ -39,6 +41,8 @@ import { IndexedDBService } from '../../services/indexeddb.service';
     InputTextModule,
     TabViewModule,
     ToastModule,
+    CheckboxModule,
+    FormsModule,
     CurrencyOrDashPipe,
     ValueOrDashPipe,
   ],
@@ -70,6 +74,44 @@ export class HomeComponent implements OnInit {
 
   contagemDetalhada = signal<any[]>([]);
   naoInventariados = signal<any[]>([]);
+  mostrarControladosContagem = signal(false);
+  mostrarNaoCadastradosContagem = signal(false);
+  mostrarControladosDivergencias = signal(false);
+  mostrarNaoCadastradosDivergencias = signal(false);
+  contagemFiltrada = computed(() => {
+    const normalizar = (valor: any) =>
+      String(valor ?? '')
+        .trim()
+        .toUpperCase();
+    const isControlado = (item: any) => normalizar(item?.controlado).startsWith('S');
+    const listaBase = this.contagemDetalhada();
+    let lista = listaBase;
+    if (this.mostrarControladosContagem()) {
+      lista = lista.filter((item) => isControlado(item));
+    }
+    if (this.mostrarNaoCadastradosContagem()) {
+      lista = lista.filter((item) => !!item?.semCadastro);
+    }
+    return lista;
+  });
+  divergenciasFiltradas = computed(() => {
+    const normalizar = (valor: any) =>
+      String(valor ?? '')
+        .trim()
+        .toUpperCase();
+    const isControlado = (item: any) => normalizar(item?.controlado).startsWith('S');
+    const listaBase = this.divergencias();
+    let lista = listaBase;
+    if (this.mostrarControladosDivergencias()) {
+      lista = lista.filter((item) => isControlado(item));
+    }
+    if (this.mostrarNaoCadastradosDivergencias()) {
+      lista = lista.filter(
+        (item) => !!item?.semCadastro || normalizar(item?.tipo) === 'PRODUTO NÃO CADASTRADO'
+      );
+    }
+    return lista;
+  });
   eanColumns = computed(() => {
     const produtos = this.cadastro();
     const max = produtos.reduce(
@@ -505,6 +547,7 @@ export class HomeComponent implements OnInit {
                       fabricante: semCadastro ? '---' : (prod?.fabricante ?? '---'),
                       secao: semCadastro ? '---' : '',
                       qtdeEscaneada: 0,
+                      controlado: semCadastro ? 'N' : (prod?.controlado ?? ''),
                       semCadastro,
                     };
                   } else {
@@ -516,6 +559,7 @@ export class HomeComponent implements OnInit {
                     atual.descricao = 'PRODUTO NÃO ENCONTRADO NO CADASTRO';
                     atual.fabricante = '---';
                     atual.secao = '---';
+                    atual.controlado = 'N';
                   } else if (prod) {
                     atual.codigo = prod.codigo ?? atual.codigo;
                     atual.ean = prod.ean ?? atual.ean;
@@ -523,6 +567,7 @@ export class HomeComponent implements OnInit {
                     atual.fabricante = prod.fabricante ?? atual.fabricante ?? '---';
                     const novaSecao = (secao ?? '').trim() || prod.secao || '';
                     if (novaSecao) atual.secao = novaSecao;
+                    atual.controlado = prod.controlado ?? atual.controlado ?? '';
                     atual.semCadastro = false;
                   }
 
@@ -715,13 +760,13 @@ export class HomeComponent implements OnInit {
   }
 
   get totalPositivo(): number {
-    return this.divergencias()
+    return this.divergenciasFiltradas()
       .filter((d) => d.valorDiferenca != null && d.valorDiferenca > 0)
       .reduce((sum, d) => sum + d.valorDiferenca, 0);
   }
 
   get totalNegativo(): number {
-    return this.divergencias()
+    return this.divergenciasFiltradas()
       .filter((d) => d.valorDiferenca != null && d.valorDiferenca < 0)
       .reduce((sum, d) => sum + d.valorDiferenca, 0);
   }
