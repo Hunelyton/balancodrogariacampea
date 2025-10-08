@@ -105,6 +105,16 @@ export class HomeComponent implements OnInit {
 
   private indexedDBService = new IndexedDBService('GestaoBalancoDB', 'CadastroProdutos');
 
+  /**
+   * Com a remoção definitiva da integração com o sistema Alpha7,
+   * todos os fluxos passam a utilizar o formato padrão. Mantemos o
+   * método para evitar alterar o restante do template e da lógica
+   * de exportação, retornando sempre "false".
+   */
+  isAlpha7(): boolean {
+    return false;
+  }
+
   constructor(private messageService: MessageService) { }
   async ngOnInit() {
     try {
