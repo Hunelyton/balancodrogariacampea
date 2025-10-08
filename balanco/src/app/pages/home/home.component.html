@@ -1,0 +1,681 @@
+<!-- TOPO -->
+<p-toast></p-toast>
+<p-toolbar
+  class="mb-4 shadow-2 surface-card border-round justify-content-between"
+>
+  <div class="flex align-items-center gap-3">
+    <i class="pi pi-box text-2xl"></i>
+    <span class="text-xl font-bold text-1000"><strong>EB Inventário</strong> - Gerenciador de Balanço<strong> v1.3 </strong></span>
+  </div>
+  <div class="flex gap-2">
+    <button
+      pButton
+      label="Importar Cadastro de Produtos"
+      icon="pi pi-file-excel"
+      class="p-button-success"
+      (click)="showCadastroDialog.set(true)"
+    ></button>
+    <button
+      pButton
+      label="Importar Contagem"
+      icon="pi pi-upload"
+      class="p-button-warning"
+      (click)="showContagemDialog.set(true)"
+    ></button>
+    <button
+      pButton
+      label="Limpar Dados"
+      icon="pi pi-trash"
+      class="p-button-danger"
+      (click)="limparDados()"
+    ></button>
+  </div>
+</p-toolbar>
+
+<!-- Diálogo: Importar Cadastro -->
+<p-dialog
+  header="Importar Cadastro de Produtos"
+  [visible]="showCadastroDialog()"
+  (visibleChange)="showCadastroDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+>
+  <div class="mb-3 flex gap-2 align-items-center">
+    <label class="font-semibold">Sistema:</label>
+    <p-dropdown
+      [options]="sistemasImportacao"
+      [(ngModel)]="sistemaSelecionadoModel"
+      [ngModelOptions]="{ standalone: true }"
+      (onChange)="onSistemaSelecionado($event.value)"
+      optionLabel="label"
+      optionValue="value"
+      [style]="{ minWidth: '220px' }"
+      placeholder="Selecione o sistema"
+    ></p-dropdown>
+  </div>
+  <p class="mb-4 text-sm text-600">
+    Escolha o sistema para ajustar o formato de importacao. Procfit aceita arquivos XLS/XLSX e Alpha 7 utiliza TXT separado por ponto e virgula.
+  </p>
+
+  <p-fileUpload
+    name="cadastro"
+    [customUpload]="true"
+    [accept]="acceptCadastroExtensions()"
+    [multiple]="false"
+    [maxFileSize]="5000000"
+    (uploadHandler)="handleCadastroUpload($event)"
+    (onSelect)="onSelectedFiles($event)"
+  >
+    <!-- HEADER -->
+    <ng-template
+      pTemplate="header"
+      let-files
+      let-chooseCallback="chooseCallback"
+      let-clearCallback="clearCallback"
+      let-uploadCallback="uploadCallback"
+    >
+      <div
+        class="flex flex-wrap justify-content-between align-items-center gap-2"
+      >
+        <div class="flex gap-2">
+          <p-button
+            LABEL="Escolher Arquivo"
+            (onClick)="choose($event, chooseCallback)"
+            icon="pi pi-file-excel"
+            [rounded]="true"
+            [outlined]="true"
+          ></p-button>
+          <p-button
+            label="Enviar Arquivo"
+            (onClick)="uploadEvent(uploadCallback)"
+            icon="pi pi-cloud-upload"
+            [rounded]="true"
+            [outlined]="true"
+            severity="success"
+            [disabled]="!files?.length"
+          ></p-button>
+          <p-button
+            label="Limpar Seleção"
+            (onClick)="clearCallback()"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="true"
+            severity="danger"
+            [disabled]="!files?.length"
+          ></p-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- CONTENT -->
+    <ng-template pTemplate="content" let-files>
+      <div *ngIf="files?.length">
+        <h5>Arquivo selecionado:</h5>
+        <ul>
+          <li *ngFor="let file of files">
+            {{ file.name }} - {{ formatSize(file.size) }}
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+
+    <!-- EMPTY -->
+    <ng-template pTemplate="empty">
+      <div class="flex align-items-center justify-content-center flex-column">
+        <p class="mt-4 mb-0">
+          Arraste e solte o arquivo XLS aqui ou use os botões acima.
+        </p>
+      </div>
+    </ng-template>
+  </p-fileUpload>
+</p-dialog>
+
+<!-- Diálogo: Importar Contagem -->
+<p-dialog
+  header="Importar Contagem"
+  [visible]="showContagemDialog()"
+  (visibleChange)="showContagemDialog.set($event)"
+  [modal]="true"
+  [style]="{ width: '50vw' }"
+>
+  <p-fileUpload
+    name="contagem"
+    [customUpload]="true"
+    accept=".txt"
+    [multiple]="true"
+    [maxFileSize]="5000000"
+    (uploadHandler)="handleContagemUpload($event)"
+    (onSelect)="onSelectedFiles($event)"
+  >
+    <ng-template
+      pTemplate="header"
+      let-files
+      let-chooseCallback="chooseCallback"
+      let-clearCallback="clearCallback"
+      let-uploadCallback="uploadCallback"
+    >
+      <div
+        class="flex flex-wrap justify-content-between align-items-center gap-2"
+      >
+        <div class="flex gap-2">
+          <p-button
+            label="Escolher Arquivo"
+            (onClick)="choose($event, chooseCallback)"
+            icon="pi pi-file"
+            [rounded]="true"
+            [outlined]="true"
+          ></p-button>
+          <p-button
+            label="Enviar Arquivo"
+            (onClick)="uploadEvent(uploadCallback)"
+            icon="pi pi-cloud-upload"
+            [rounded]="true"
+            [outlined]="true"
+            severity="success"
+            [disabled]="!files?.length"
+          ></p-button>
+          <p-button
+            label="Limpar Seleção"
+            (onClick)="clearCallback()"
+            icon="pi pi-times"
+            [rounded]="true"
+            [outlined]="true"
+            severity="danger"
+            [disabled]="!files?.length"
+          ></p-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="content" let-files>
+      <div *ngIf="files?.length">
+        <h5>Arquivo selecionado:</h5>
+        <ul>
+          <li *ngFor="let file of files">
+            {{ file.name }} - {{ formatSize(file.size) }}
+          </li>
+        </ul>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="empty">
+      <div class="flex align-items-center justify-content-center flex-column">
+        <p class="mt-4 mb-0">
+          Arraste e solte o arquivo TXT aqui ou use os botões acima.
+        </p>
+      </div>
+    </ng-template>
+  </p-fileUpload>
+</p-dialog>
+
+<!-- TABS -->
+<p-tabView class="mt-3">
+  <!-- CADASTRO -->
+  <p-tabPanel header="Cadastro de Produtos">
+    <p-table
+      #dtCadastro
+      *ngIf="cadastro().length"
+      [value]="cadastro()"
+      [paginator]="true"
+      [rows]="10"
+      [globalFilterFields]="[
+        'codigo',
+        'ean',
+        'descricao',
+        'fabricante',
+        'controlado',
+        'custo',
+        'qtde'
+      ]"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="
+                dtCadastro.filterGlobal($any($event.target).value, 'contains')
+              "
+              placeholder="Pesquisar geral"
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngIf="!isAlpha7()" pSortableColumn="fabricante">
+            EMPRESA <p-sortIcon field="fabricante" />
+          </th>
+          <th pSortableColumn="codigo">
+            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+          </th>
+          <th pSortableColumn="descricao">
+            DESCRICAO <p-sortIcon field="descricao" />
+          </th>
+
+          <th pSortableColumn="qtde">SALDO <p-sortIcon field="qtde" /></th>
+          <th pSortableColumn="controlado">
+            CONTROLADO <p-sortIcon field="controlado" />
+          </th>
+          <th pSortableColumn="custo">
+            CUSTO GERENCIAL <p-sortIcon field="custo" />
+          </th>
+          <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
+            <ng-container *ngFor="let idx of eanIdxs; let i = index">
+              <th *ngIf="!isAlpha7() || i === 0">
+                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              </th>
+            </ng-container>
+          </ng-container>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-prod>
+        <tr>
+          <td *ngIf="!isAlpha7()">{{ prod.fabricante }}</td>
+          <td>{{ prod.codigo }}</td>
+          <td>{{ prod.descricao }}</td>
+
+          <td>{{ prod.qtde }}</td>
+          <td>{{ prod.controlado }}</td>
+          <td>{{ prod.custo | currencyOrDash }}</td>
+          <ng-container *ngIf="splitEans(prod.ean) as eans">
+            <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
+              <ng-container *ngFor="let idx of eanIdxs; let i = index">
+                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div
+      *ngIf="cadastro().length"
+      class="mt-3 flex gap-2 justify-content-start"
+    >
+      <button
+        pButton
+        label="Exportar PDF"
+        icon="pi pi-file-pdf"
+        class="p-button-danger"
+        (click)="exportarCadastroPdf()"
+      ></button>
+      <button
+        pButton
+        label="Exportar Excel"
+        icon="pi pi-file-excel"
+        class="p-button-success"
+        (click)="exportarCadastroExcel()"
+      ></button>
+    </div>
+  </p-tabPanel>
+
+  <!-- CONTAGEM -->
+  <p-tabPanel header="Contagem">
+    <div *ngIf="!contagemDetalhada().length" class="mb-2 flex align-items-center gap-2">
+      <input pInputText placeholder="EAN" #novoEanVazio style="width: 180px" />
+      <input pInputText type="number" min="1" placeholder="Qtde" #novaQtdeVazio style="width: 100px" />
+      <button
+        pButton
+        label="Adicionar"
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value); novoEanVazio.value=''; novaQtdeVazio.value='';"
+      ></button>
+    </div>
+    <p-table
+      #dtContagem
+      *ngIf="contagemDetalhada().length"
+      [value]="contagemDetalhada()"
+      [paginator]="true"
+      [rows]="10"
+      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada']"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dtContagem.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Pesquisar geral"
+            />
+          </span>
+          <div class="flex align-items-center gap-2">
+            <input pInputText placeholder="EAN" #novoEan style="width: 180px" />
+            <input pInputText type="number" min="1" placeholder="Qtde" #novaQtde style="width: 100px" />
+            <button
+              pButton
+              label="Adicionar"
+              icon="pi pi-plus"
+              class="p-button-success"
+              (click)="addProdutoContagem(novoEan.value, novaQtde.value); novoEan.value=''; novaQtde.value='';"
+            ></button>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigo">
+            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+          </th>
+
+          <th pSortableColumn="descricao">
+            DESCRIÇÃO <p-sortIcon field="descricao" />
+          </th>
+          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
+          <th pSortableColumn="qtdeEscaneada">
+            QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
+          </th>
+          <ng-container *ngIf="getEanIndexesWithData(contagemDetalhada()).length > 0">
+            <ng-container *ngFor="let idx of getEanIndexesWithData(contagemDetalhada()); let i = index">
+              <th *ngIf="!isAlpha7() || i === 0">
+                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              </th>
+            </ng-container>
+          </ng-container>
+          <th style="width: 60px"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.codigo }}</td>
+
+          <td>{{ item.descricao }}</td>
+          <td>{{ item.secao }}</td>
+          <td>
+            <input
+              #qtdeInput
+              type="number"
+              min="0"
+              [value]="item.qtdeEscaneada"
+              (change)="onQtdeEscaneadaChange(item, qtdeInput.value)"
+              style="width: 80px"
+            />
+          </td>
+          <ng-container *ngIf="splitEans(item.ean) as eans">
+            <ng-container *ngIf="getEanIndexesWithData(contagemDetalhada()).length > 0">
+              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemDetalhada()); let i = index">
+                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <td class="text-center">
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-danger p-button-text p-button-rounded"
+              (click)="removerProdutoContagem(item)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div
+      *ngIf="contagemDetalhada().length"
+      class="mt-3 flex gap-2 justify-content-start"
+    >
+      <button
+        pButton
+        label="Exportar PDF"
+        icon="pi pi-file-pdf"
+        class="p-button-danger"
+        (click)="exportarContagemPdf()"
+      ></button>
+      <button
+        pButton
+        label="Exportar Excel"
+        icon="pi pi-file-excel"
+        class="p-button-success"
+        (click)="exportarContagemExcel()"
+      ></button>
+      <button
+        pButton
+        label="Exportar TXT"
+        icon="pi pi-download"
+        class="p-button-secondary"
+        (click)="exportarContagemTxt()"
+      ></button>
+    </div>
+  </p-tabPanel>
+
+  <!-- DIVERGÊNCIAS -->
+  <p-tabPanel header="Divergências">
+    <p-table
+      #dtDivergencias
+      *ngIf="divergencias().length"
+      [value]="divergencias()"
+      [paginator]="true"
+      [rows]="10"
+      [globalFilterFields]="['fabricante', 'codigo', 'ean', 'descricao', 'secao', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dtDivergencias.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Pesquisar geral"
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngIf="!isAlpha7()" pSortableColumn="fabricante">
+            EMPRESA <p-sortIcon field="fabricante" />
+          </th>
+          <th pSortableColumn="codigo">
+            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+          </th>
+          <ng-container *ngIf="getEanIndexesWithData(divergencias()) as eanIdxs">
+            <ng-container *ngFor="let idx of eanIdxs; let i = index">
+              <th *ngIf="!isAlpha7() || i === 0">
+                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              </th>
+            </ng-container>
+          </ng-container>
+          <th pSortableColumn="descricao">
+            DESCRIÇÃO <p-sortIcon field="descricao" />
+          </th>
+          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
+          <th pSortableColumn="custo">CUSTO <p-sortIcon field="custo" /></th>
+          <th pSortableColumn="qtdeLoja">
+            QTDE LOJA <p-sortIcon field="qtdeLoja" />
+          </th>
+          <th pSortableColumn="qtdeEscaneada">
+            QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
+          </th>
+          <th pSortableColumn="qtdeDivergente">
+            QTDE DIVERGENTE <p-sortIcon field="qtdeDivergente" />
+          </th>
+          <th pSortableColumn="valorDiferenca">
+            VALOR DIFERENÇA <p-sortIcon field="valorDiferenca" />
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td *ngIf="!isAlpha7()">{{ item.fabricante }}</td>
+          <td>{{ item.codigo }}</td>
+          <ng-container *ngIf="splitEans(item.ean) as eans">
+            <ng-container *ngIf="getEanIndexesWithData(divergencias()) as eanIdxs">
+              <ng-container *ngFor="let idx of eanIdxs; let i = index">
+                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <td>{{ item.descricao }}</td>
+          <td>{{ item.secao }}</td>
+          <td>{{ item.custo | currencyOrDash }}</td>
+          <td>{{ item.qtdeLoja | valueOrDash }}</td>
+          <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
+          <td
+            [ngClass]="{
+              'text-red-500 font-bold': item.qtdeDivergente < 0,
+              'text-blue-500 font-bold': item.qtdeDivergente > 0
+            }"
+          >
+            {{ item.qtdeDivergente | valueOrDash }}
+          </td>
+          <td
+            [ngClass]="{
+              'text-red-500 font-bold': item.valorDiferenca < 0,
+              'text-blue-500 font-bold': item.valorDiferenca > 0
+            }"
+          >
+            {{ item.valorDiferenca | currencyOrDash }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div *ngIf="divergencias().length" class="mt-3">
+      <table class="w-full">
+        <tr>
+          <td class="font-bold text-blue-500">DIVERGÊNCIAS POSITIVAS</td>
+          <td class="text-blue-500">
+            {{ totalPositivo | currencyOrDash }}
+          </td>
+          <td class="font-bold text-red-500">DIVERGÊNCIAS NEGATIVAS:</td>
+          <td class="text-red-500">
+            {{ totalNegativo | currencyOrDash }}
+          </td>
+          <td
+            class="font-bold"
+            [ngClass]="{
+              'text-blue-500': diferencaBalanco >= 0,
+              'text-red-500': diferencaBalanco < 0
+            }"
+          >
+            TOTAL DIVERGÊNCIAS:
+          </td>
+          <td
+            [ngClass]="{
+              'text-blue-500': diferencaBalanco >= 0,
+              'text-red-500': diferencaBalanco < 0
+            }"
+          >
+            {{ diferencaBalanco | currencyOrDash }}
+          </td>
+        </tr>
+      </table>
+
+      <div class="flex gap-2 justify-content-start mt-2">
+        <button
+          pButton
+          label="Exportar PDF"
+          icon="pi pi-file-pdf"
+          class="p-button-danger"
+          (click)="exportarPdf()"
+        ></button>
+        <button
+          pButton
+          label="Exportar Excel"
+          icon="pi pi-file-excel"
+          class="p-button-success"
+          (click)="exportarExcel()"
+        ></button>
+      </div>
+    </div>
+  </p-tabPanel>
+
+  <!-- NÃO INVENTARIADOS -->
+  <p-tabPanel header="Não Contados com estoque">
+    <p-table
+      #dtNaoContados
+      *ngIf="naoInventariados().length"
+      [value]="naoInventariados()"
+      [paginator]="true"
+      [rows]="10"
+      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'qtde']"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dtNaoContados.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Pesquisar geral"
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="codigo">
+            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+          </th>
+          <ng-container *ngIf="eanColumnsNaoContados().length > 0">
+            <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
+              <th *ngIf="!isAlpha7() || i === 0">
+                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              </th>
+            </ng-container>
+          </ng-container>
+          <th pSortableColumn="descricao">
+            DESCRIÇÃO <p-sortIcon field="descricao" />
+          </th>
+          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
+          <th pSortableColumn="qtde">QUANTIDADE <p-sortIcon field="qtde" /></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.codigo }}</td>
+          <ng-container *ngIf="splitEans(item.ean) as eans">
+            <ng-container *ngIf="eanColumnsNaoContados().length > 0">
+              <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
+                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <td>{{ item.descricao }}</td>
+          <td>{{ item.secao }}</td>
+          <td>{{ item.qtde }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div
+      *ngIf="naoInventariados().length"
+      class="mt-3 flex gap-2 justify-content-start"
+    >
+      <button
+        pButton
+        label="Exportar PDF"
+        icon="pi pi-file-pdf"
+        class="p-button-danger"
+        (click)="exportarNaoContadosPdf()"
+      ></button>
+      <button
+        pButton
+        label="Exportar Excel"
+        icon="pi pi-file-excel"
+        class="p-button-success"
+        (click)="exportarNaoContadosExcel()"
+      ></button>
+    </div>
+  </p-tabPanel>
+</p-tabView>
+
+<footer class="text-center text-sm">
+  <p>
+    <strong>Razão Social: </strong>Inventário EB
+    <strong>CNPJ: </strong>51.390.090/0001-05
+    <strong>Telefone: </strong>(11)99958-5344 <strong>Endereço: </strong>Rua
+    América Central, 285, Parque das Américas, Mauá - SP, 09351-190
+  </p>
+
+       <p>
+    <strong>Desenvolvido por: </strong>Hunelyton Mendes
+    <strong>Telefone: </strong>(13)98119-6498
+  </p>
+</footer>
