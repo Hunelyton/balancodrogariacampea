@@ -40,27 +40,14 @@
   [modal]="true"
   [style]="{ width: '50vw' }"
 >
-  <div class="mb-3 flex gap-2 align-items-center">
-    <label class="font-semibold">Sistema:</label>
-    <p-dropdown
-      [options]="sistemasImportacao"
-      [(ngModel)]="sistemaSelecionadoModel"
-      [ngModelOptions]="{ standalone: true }"
-      (onChange)="onSistemaSelecionado($event.value)"
-      optionLabel="label"
-      optionValue="value"
-      [style]="{ minWidth: '220px' }"
-      placeholder="Selecione o sistema"
-    ></p-dropdown>
-  </div>
   <p class="mb-4 text-sm text-600">
-    Escolha o sistema para ajustar o formato de importacao. Procfit aceita arquivos XLS/XLSX e Alpha 7 utiliza TXT separado por ponto e virgula.
+    Importação disponível exclusivamente para arquivos Procfit nos formatos XLS ou XLSX.
   </p>
 
   <p-fileUpload
     name="cadastro"
     [customUpload]="true"
-    [accept]="acceptCadastroExtensions()"
+    accept=".xls,.xlsx"
     [multiple]="false"
     [maxFileSize]="5000000"
     (uploadHandler)="handleCadastroUpload($event)"

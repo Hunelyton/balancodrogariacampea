@@ -11,8 +11,6 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TabViewModule } from 'primeng/tabview';
-import { DropdownModule } from 'primeng/dropdown';
-import { FormsModule } from '@angular/forms';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import {
   HttpClientModule,
@@ -25,8 +23,6 @@ import { CurrencyOrDashPipe } from '../../pipes/currency-or-dash.pipe';
 import { ValueOrDashPipe } from '../../pipes/value-or-dash.pipe';
 import { IndexedDBService } from '../../services/indexeddb.service';
 
-type SistemaImportacao = 'procfit' | 'alpha7';
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -35,7 +31,6 @@ type SistemaImportacao = 'procfit' | 'alpha7';
   imports: [
     HttpClientModule,
     CommonModule,
-    FormsModule,
     DialogModule,
     FileUploadModule,
     ButtonModule,
@@ -43,7 +38,6 @@ type SistemaImportacao = 'procfit' | 'alpha7';
     TableModule,
     InputTextModule,
     TabViewModule,
-    DropdownModule,
     ToastModule,
     CurrencyOrDashPipe,
     ValueOrDashPipe,
@@ -72,17 +66,7 @@ export class HomeComponent implements OnInit {
   showCadastroDialog = signal(false);
   showContagemDialog = signal(false);
   cadastro = signal<any[]>([]);
-  sistemasImportacao: { label: string; value: SistemaImportacao }[] = [
-    { label: 'PROCFIT', value: 'procfit' },
-    { label: 'ALPHA 7 - ', value: 'alpha7' },
-  ];
-  sistemaSelecionado = signal<SistemaImportacao>('procfit');
-  isAlpha7 = computed(() => this.sistemaSelecionado() === 'alpha7');
-  acceptCadastroExtensions = computed(() =>
-    this.isAlpha7() ? '.txt' : '.xls,.xlsx'
-  );
   divergencias = signal<any[]>([]);
-  sistemaSelecionadoModel: SistemaImportacao = 'procfit';
 
   contagemDetalhada = signal<any[]>([]);
   naoInventariados = signal<any[]>([]);
@@ -123,7 +107,6 @@ export class HomeComponent implements OnInit {
 
   constructor(private messageService: MessageService) { }
   async ngOnInit() {
-    this.sistemaSelecionadoModel = this.sistemaSelecionado();
     try {
       const cadastroProdutos = await this.indexedDBService.getItem('cadastroProdutos');
       if (Array.isArray(cadastroProdutos) && cadastroProdutos.length) {
@@ -169,14 +152,6 @@ export class HomeComponent implements OnInit {
         detail: 'Não foi possível limpar os dados locais.'
       });
     }
-  }
-
-  onSistemaSelecionado(valor: SistemaImportacao | null | undefined) {
-    if (!valor) {
-      return;
-    }
-    this.sistemaSelecionadoModel = valor;
-    this.sistemaSelecionado.set(valor);
   }
 
   gerarDivergencias() {
@@ -262,15 +237,9 @@ export class HomeComponent implements OnInit {
         return;
       }
 
-      const sistema = this.sistemaSelecionado();
-      const leitor =
-        sistema === 'alpha7'
-          ? this.lerCadastroAlpha7(file)
-          : this.lerCadastroProcfit(file);
-
-      leitor
+      this.lerCadastroProcfit(file)
         .then((cadastroProdutos) =>
-          this.persistirCadastroProdutos(cadastroProdutos, sistema)
+          this.persistirCadastroProdutos(cadastroProdutos)
         )
         .catch((error) => {
           const alreadyHandled = !!(
@@ -369,68 +338,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  private lerCadastroAlpha7(file: File): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        try {
-          const conteudo = (e.target.result as string) ?? '';
-          const linhas = conteudo
-            .split(/\r?\n/)
-            .map((l) => l.trim())
-            .filter((l) => l.length);
-
-          const cadastroProdutos = linhas
-            .map((linha, index) => {
-              if (index === 0) {
-                return null;
-              }
-              if (linha.toLowerCase().startsWith('etiqueta;')) {
-                return null;
-              }
-              const partes = linha.split(';');
-              if (partes.length < 7) {
-                console.warn(`Linha ${index + 1} ignorada: formato invalido.`, linha);
-                return null;
-              }
-              const [
-                etiqueta,
-                produto,
-                codigoBarras,
-                fabricante,
-                custo,
-                estoque,
-                controlado,
-              ] = partes.map((p) => p.trim());
-
-              const eans = Array.from(
-                new Set(this.splitEans(codigoBarras).filter(Boolean))
-              );
-
-              return {
-                codigo: etiqueta,
-                ean: eans.join(';'),
-                descricao: produto,
-                fabricante,
-                qtde: this.converterParaFloat(estoque),
-                controlado: (controlado || '').toUpperCase(),
-                custo: this.converterParaFloat(custo),
-                secao: '',
-              };
-            })
-            .filter((item): item is any => !!item);
-
-          resolve(cadastroProdutos);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = () => reject('Falha ao ler o arquivo TXT.');
-      reader.readAsText(file, 'ISO-8859-1');
-    });
-  }
-
-  private persistirCadastroProdutos(cadastroProdutos: any[], sistema: SistemaImportacao) {
+  private persistirCadastroProdutos(cadastroProdutos: any[]) {
     const total = Array.isArray(cadastroProdutos) ? cadastroProdutos.length : 0;
 
     return this.indexedDBService
@@ -448,7 +356,7 @@ export class HomeComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Produtos carregados',
-          detail: `${normalizados.length} produtos recuperados do IndexedDB (${this.descricaoSistemaImportacao(sistema)}).`,
+          detail: `${normalizados.length} produtos recuperados do IndexedDB (Procfit).`,
         });
 
         this.contagemDetalhada.set([]);
@@ -461,7 +369,7 @@ export class HomeComponent implements OnInit {
           summary: total > 0 ? 'Cadastro importado com sucesso' : 'Cadastro vazio',
           detail:
             total > 0
-              ? `${total} produtos carregados (${this.descricaoSistemaImportacao(sistema)}).`
+              ? `${total} produtos carregados (Procfit).`
               : 'Nenhum produto foi encontrado no arquivo importado.',
         });
 
@@ -479,10 +387,6 @@ export class HomeComponent implements OnInit {
         handledError.__handled = true;
         throw handledError;
       });
-  }
-
-  private descricaoSistemaImportacao(sistema: SistemaImportacao): string {
-    return sistema === 'alpha7' ? 'Alpha 7' : 'Procfit';
   }
 
   converterParaFloat(valor: any): number {
