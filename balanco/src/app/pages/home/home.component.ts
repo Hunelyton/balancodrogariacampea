@@ -484,10 +484,13 @@ export class HomeComponent implements OnInit {
                 .split(/\r?\n/)
                 .filter((l) => l.trim().length)
                 .forEach((l) => {
-                  const [cod, qtde, secao] = l.split(/[|,;]/);
-                  const raw = (cod ?? '').trim();
+                  const [eanValue, qtdeValue, secaoValue, coletorValue, inventariadorValue] = l.split(/[|,;]/);
+                  const raw = (eanValue ?? '').trim();
                   const keyCodigo = normalizarCodigo(raw);
                   const keyEan = normalizarEan(raw);
+                  const secaoLinha = (secaoValue ?? '').trim();
+                  const coletorLinha = (coletorValue ?? '').trim();
+                  const inventariadorLinha = (inventariadorValue ?? '').trim();
 
                   const prod = codigoMap.get(keyCodigo) ?? eanMap.get(keyEan);
                   const semCadastro = !prod;
@@ -503,8 +506,10 @@ export class HomeComponent implements OnInit {
                         ? 'PRODUTO NÃO ENCONTRADO NO CADASTRO'
                         : (prod?.descricao ?? ''),
                       fabricante: semCadastro ? '---' : (prod?.fabricante ?? '---'),
-                      secao: semCadastro ? '---' : '',
+                      secao: semCadastro ? '---' : secaoLinha || '',
                       qtdeEscaneada: 0,
+                      coletor: coletorLinha,
+                      inventariador: inventariadorLinha,
                       semCadastro,
                     };
                   } else {
@@ -521,12 +526,18 @@ export class HomeComponent implements OnInit {
                     atual.ean = prod.ean ?? atual.ean;
                     atual.descricao = prod.descricao ?? atual.descricao ?? '';
                     atual.fabricante = prod.fabricante ?? atual.fabricante ?? '---';
-                    const novaSecao = (secao ?? '').trim() || prod.secao || '';
+                    const novaSecao = secaoLinha || prod.secao || '';
                     if (novaSecao) atual.secao = novaSecao;
                     atual.semCadastro = false;
                   }
 
-                  atual.qtdeEscaneada += Number(qtde) || 0;
+                  atual.qtdeEscaneada += Number(qtdeValue) || 0;
+                  if (coletorLinha) {
+                    atual.coletor = coletorLinha;
+                  }
+                  if (inventariadorLinha) {
+                    atual.inventariador = inventariadorLinha;
+                  }
                   contagemMap.set(contKey, atual);
                 });
 
@@ -854,11 +865,19 @@ export class HomeComponent implements OnInit {
 
     autoTable(doc, {
       startY: 25,
-      head: [['Código', 'EAN', 'Descrição', 'Seção', 'Quantidade Escaneada']],
+      head: [['Código', 'EAN', 'Descrição', 'Seção', 'Quantidade Escaneada', 'Coletor', 'Inventariador']],
       body: this.contagemDetalhada()
         .slice()
         .sort((a, b) => a.descricao.localeCompare(b.descricao))
-        .map((c) => [c.codigo, c.ean, c.descricao, c.secao, c.qtdeEscaneada]),
+        .map((c) => [
+          c.codigo,
+          c.ean,
+          c.descricao,
+          c.secao,
+          c.qtdeEscaneada,
+          c.coletor ?? '',
+          c.inventariador ?? '',
+        ]),
     });
 
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -881,9 +900,11 @@ export class HomeComponent implements OnInit {
         descricao: c.descricao,
         secao: c.secao,
         qtdeEscaneada: c.qtdeEscaneada,
+        coletor: c.coletor ?? '',
+        inventariador: c.inventariador ?? '',
       }));
     const ws = XLSX.utils.json_to_sheet(dados, {
-      header: ['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada'],
+      header: ['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada', 'coletor', 'inventariador'],
     });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Contagem');
@@ -993,6 +1014,8 @@ export class HomeComponent implements OnInit {
             fabricante: prod.fabricante || '',
             secao: prod.secao || '',
             qtdeEscaneada: qtde,
+            coletor: '',
+            inventariador: '',
           });
         } else {
           // Sem cadastro — ainda assim adiciona à contagem
@@ -1003,6 +1026,8 @@ export class HomeComponent implements OnInit {
             fabricante: '',
             secao: '',
             qtdeEscaneada: qtde,
+            coletor: '',
+            inventariador: '',
           });
         }
       }
