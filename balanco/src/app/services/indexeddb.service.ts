@@ -1,6 +1,8 @@
 export class IndexedDBService {
   private dbName: string;
   private storeName: string;
+  private isFallback = false;
+  private fallbackStore = new Map<string, any>();
 
   constructor(dbName: string, storeName: string) {
     this.dbName = dbName;
@@ -14,15 +16,34 @@ export class IndexedDBService {
     return undefined;
   }
 
-  private openDB(): Promise<IDBDatabase> {
+  private openDB(): Promise<IDBDatabase | null> {
     return new Promise((resolve, reject) => {
       const indexedDBRef = this.getIndexedDB();
       if (!indexedDBRef) {
-        reject(new Error('IndexedDB is not available in this environment.'));
+        if (!this.isFallback) {
+          this.isFallback = true;
+          console.warn(
+            'IndexedDB not available; using in-memory storage. Dados não serão persistidos entre sessões.'
+          );
+        }
+        resolve(null);
         return;
       }
 
-      const request = indexedDBRef.open(this.dbName);
+      let request: IDBOpenDBRequest;
+      try {
+        request = indexedDBRef.open(this.dbName);
+      } catch (err) {
+        if (!this.isFallback) {
+          this.isFallback = true;
+          console.warn(
+            'IndexedDB open() falhou; usando armazenamento em memória. Dados não serão persistidos entre sessões.',
+            err
+          );
+        }
+        resolve(null);
+        return;
+      }
 
       request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
         const db = (event.target as IDBOpenDBRequest).result;
@@ -32,12 +53,25 @@ export class IndexedDBService {
       };
 
       request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        if (!this.isFallback) {
+          this.isFallback = true;
+          console.warn(
+            'IndexedDB request failed; usando armazenamento em memória. Dados não serão persistidos entre sessões.',
+            request.error
+          );
+        }
+        resolve(null);
+      };
     });
   }
 
   async setItem(key: string, value: any): Promise<void> {
     const db = await this.openDB();
+    if (!db) {
+      this.fallbackStore.set(key, value);
+      return;
+    }
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(this.storeName, 'readwrite');
       const store = transaction.objectStore(this.storeName);
@@ -50,6 +84,9 @@ export class IndexedDBService {
 
   async getItem(key: string): Promise<any> {
     const db = await this.openDB();
+    if (!db) {
+      return this.fallbackStore.get(key);
+    }
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(this.storeName, 'readonly');
       const store = transaction.objectStore(this.storeName);
@@ -62,6 +99,10 @@ export class IndexedDBService {
 
   async removeItem(key: string): Promise<void> {
     const db = await this.openDB();
+    if (!db) {
+      this.fallbackStore.delete(key);
+      return;
+    }
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(this.storeName, 'readwrite');
       const store = transaction.objectStore(this.storeName);
@@ -74,6 +115,10 @@ export class IndexedDBService {
 
   async clear(): Promise<void> {
     const db = await this.openDB();
+    if (!db) {
+      this.fallbackStore.clear();
+      return;
+    }
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(this.storeName, 'readwrite');
       const store = transaction.objectStore(this.storeName);

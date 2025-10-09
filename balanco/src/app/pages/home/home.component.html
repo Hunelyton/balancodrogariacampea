@@ -4,8 +4,9 @@
   class="mb-4 shadow-2 surface-card border-round justify-content-between"
 >
   <div class="flex align-items-center gap-3">
-    <i class="pi pi-box text-2xl"></i>
-    <span class="text-xl font-bold text-1000"><strong>EB Inventário</strong> - Gerenciador de Balanço<strong> v1.3 </strong></span>
+    <img src="./src/assets/logodrogariacampea.png" alt="Logo Drogaria Campeã" style="height: 40px;" />
+
+    <span class="text-xl font-bold text-1000"><strong>Drogarias Campeã</strong> - Gerenciador de Balanço</span>
   </div>
   <div class="flex gap-2">
     <button
@@ -14,6 +15,7 @@
       icon="pi pi-file-excel"
       class="p-button-success"
       (click)="showCadastroDialog.set(true)"
+      title="Importar Cadastro de Produtos"
     ></button>
     <button
       pButton
@@ -21,6 +23,7 @@
       icon="pi pi-upload"
       class="p-button-warning"
       (click)="showContagemDialog.set(true)"
+      title="Importar Contagem"
     ></button>
     <button
       pButton
@@ -28,6 +31,7 @@
       icon="pi pi-trash"
       class="p-button-danger"
       (click)="limparDados()"
+      title="Limpar todos os dados (Cadastro, Contagem e Divergências)"
     ></button>
   </div>
 </p-toolbar>
@@ -231,11 +235,11 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th *ngIf="!isAlpha7()" pSortableColumn="fabricante">
+          <th pSortableColumn="fabricante">
             EMPRESA <p-sortIcon field="fabricante" />
           </th>
           <th pSortableColumn="codigo">
-            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+            PRODUTO <p-sortIcon field="codigo" />
           </th>
           <th pSortableColumn="descricao">
             DESCRICAO <p-sortIcon field="descricao" />
@@ -250,8 +254,8 @@
           </th>
           <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
             <ng-container *ngFor="let idx of eanIdxs; let i = index">
-              <th *ngIf="!isAlpha7() || i === 0">
-                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              <th>
+                {{ 'EAN ' + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
@@ -259,7 +263,7 @@
       </ng-template>
       <ng-template pTemplate="body" let-prod>
         <tr>
-          <td *ngIf="!isAlpha7()">{{ prod.fabricante }}</td>
+          <td>{{ prod.fabricante }}</td>
           <td>{{ prod.codigo }}</td>
           <td>{{ prod.descricao }}</td>
 
@@ -269,7 +273,7 @@
           <ng-container *ngIf="splitEans(prod.ean) as eans">
             <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
               <ng-container *ngFor="let idx of eanIdxs; let i = index">
-                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+                <td>{{ eans[idx] || '-' }}</td>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -287,6 +291,7 @@
         icon="pi pi-file-pdf"
         class="p-button-danger"
         (click)="exportarCadastroPdf()"
+        title="Exportar lista de produtos cadastrados para PDF"
       ></button>
       <button
         pButton
@@ -294,6 +299,7 @@
         icon="pi pi-file-excel"
         class="p-button-success"
         (click)="exportarCadastroExcel()"
+        title="Exportar lista de produtos cadastrados para Excel"
       ></button>
     </div>
   </p-tabPanel>
@@ -309,6 +315,7 @@
         icon="pi pi-plus"
         class="p-button-success"
         (click)="addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value); novoEanVazio.value=''; novaQtdeVazio.value='';"
+        title="Adicionar produto à contagem manualmente"
       ></button>
     </div>
     <p-table
@@ -339,6 +346,7 @@
               icon="pi pi-plus"
               class="p-button-success"
               (click)="addProdutoContagem(novoEan.value, novaQtde.value); novoEan.value=''; novaQtde.value='';"
+              title="Adicionar produto à contagem manualmente"
             ></button>
           </div>
           <div class="flex align-items-center gap-3 flex-wrap">
@@ -366,59 +374,62 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="codigo">
-            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+            PRODUTO <p-sortIcon field="codigo" />
           </th>
-
-          <th pSortableColumn="descricao">
-            DESCRIÇÃO <p-sortIcon field="descricao" />
-          </th>
-          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
-          <th pSortableColumn="qtdeEscaneada">
-            QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
-          </th>
-
           <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
             <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
-
-              <th *ngIf="!isAlpha7() || i === 0">
-                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              <th>
+                {{ 'EAN ' + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
+          <th pSortableColumn="descricao">
+            DESCRIÇÃO <p-sortIcon field="descricao" />
+          </th>
+          <th pSortableColumn="qtdeEscaneada">
+            QUANTIDADE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
+          </th>
+          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
+          <th pSortableColumn="coletor">COLETOR <p-sortIcon field="coletor" /></th>
+          <th pSortableColumn="inventariador">
+            INVENTARIADOR <p-sortIcon field="inventariador" />
+          </th>
           <th style="width: 60px"></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-item>
         <tr>
           <td>{{ item.codigo }}</td>
-
+          <ng-container *ngIf="splitEans(item.ean) as eans">
+            <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
+              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
+                <td>{{ eans[idx] || '-' }}</td>
+              </ng-container>
+            </ng-container>
+          </ng-container>
           <td>{{ item.descricao }}</td>
-          <td>{{ item.secao }}</td>
           <td>
             <input
+              id="qtdeInput"
               #qtdeInput
               type="number"
               min="0"
               [value]="item.qtdeEscaneada"
               (change)="onQtdeEscaneadaChange(item, qtdeInput.value)"
-              style="width: 80px"
+              class="input-qtde"
+              placeholder="Digite a quantidade"
             />
           </td>
+          <td>{{ item.secao }}</td>
           <td>{{ item.coletor || '-' }}</td>
           <td>{{ item.inventariador || '-' }}</td>
-          <ng-container *ngIf="splitEans(item.ean) as eans">
-            <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
-              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
-                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
-              </ng-container>
-            </ng-container>
-          </ng-container>
           <td class="text-center">
             <button
               pButton
               icon="pi pi-trash"
               class="p-button-danger p-button-text p-button-rounded"
               (click)="removerProdutoContagem(item)"
+              title="Remover produto da contagem"
             ></button>
           </td>
         </tr>
@@ -435,6 +446,7 @@
         icon="pi pi-file-pdf"
         class="p-button-danger"
         (click)="exportarContagemPdf()"
+        title="Exportar lista de produtos contados para PDF"
       ></button>
       <button
         pButton
@@ -442,6 +454,7 @@
         icon="pi pi-file-excel"
         class="p-button-success"
         (click)="exportarContagemExcel()"
+        title="Exportar lista de produtos contados para Excel"
       ></button>
       <button
         pButton
@@ -449,6 +462,7 @@
         icon="pi pi-download"
         class="p-button-secondary"
         (click)="exportarContagemTxt()"
+        title="Exportar lista de produtos contados para TXT"
       ></button>
     </div>
   </p-tabPanel>
@@ -461,7 +475,7 @@
       [value]="divergenciasFiltradas()"
       [paginator]="true"
       [rows]="10"
-      [globalFilterFields]="['fabricante', 'codigo', 'ean', 'descricao', 'secao', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
+      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
     >
       <ng-template pTemplate="caption">
         <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
@@ -498,23 +512,15 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th *ngIf="!isAlpha7()" pSortableColumn="fabricante">
-            EMPRESA <p-sortIcon field="fabricante" />
-          </th>
           <th pSortableColumn="codigo">
-            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+            PRODUTO <p-sortIcon field="codigo" />
           </th>
-          <ng-container *ngIf="getEanIndexesWithData(divergenciasFiltradas()) as eanIdxs">
-            <ng-container *ngFor="let idx of eanIdxs; let i = index">
-              <th *ngIf="!isAlpha7() || i === 0">
-                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
-              </th>
-            </ng-container>
-          </ng-container>
+          <th pSortableColumn="ean">
+            EAN 1 <p-sortIcon field="ean" />
+          </th>
           <th pSortableColumn="descricao">
             DESCRIÇÃO <p-sortIcon field="descricao" />
           </th>
-          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
           <th pSortableColumn="custo">CUSTO <p-sortIcon field="custo" /></th>
           <th pSortableColumn="qtdeLoja">
             QTDE LOJA <p-sortIcon field="qtdeLoja" />
@@ -532,17 +538,9 @@
       </ng-template>
       <ng-template pTemplate="body" let-item>
         <tr>
-          <td *ngIf="!isAlpha7()">{{ item.fabricante }}</td>
           <td>{{ item.codigo }}</td>
-          <ng-container *ngIf="splitEans(item.ean) as eans">
-            <ng-container *ngIf="getEanIndexesWithData(divergenciasFiltradas()) as eanIdxs">
-              <ng-container *ngFor="let idx of eanIdxs; let i = index">
-                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
-              </ng-container>
-            </ng-container>
-          </ng-container>
+          <td>{{ splitEans(item.ean)[0] || '-' }}</td>
           <td>{{ item.descricao }}</td>
-          <td>{{ item.secao }}</td>
           <td>{{ item.custo | currencyOrDash }}</td>
           <td>{{ item.qtdeLoja | valueOrDash }}</td>
           <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
@@ -604,6 +602,7 @@
           icon="pi pi-file-pdf"
           class="p-button-danger"
           (click)="exportarPdf()"
+          title="Exportar lista de divergências para PDF"
         ></button>
         <button
           pButton
@@ -611,6 +610,7 @@
           icon="pi pi-file-excel"
           class="p-button-success"
           (click)="exportarExcel()"
+          title="Exportar lista de divergências para Excel"
         ></button>
       </div>
     </div>
@@ -642,12 +642,12 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="codigo">
-            {{ isAlpha7() ? 'ETIQUETA' : 'PRODUTO' }} <p-sortIcon field="codigo" />
+            PRODUTO <p-sortIcon field="codigo" />
           </th>
           <ng-container *ngIf="eanColumnsNaoContados().length > 0">
             <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
-              <th *ngIf="!isAlpha7() || i === 0">
-                {{ isAlpha7() ? 'EAN' : ('EAN ' + (i + 1)) }}
+              <th>
+                {{ 'EAN ' + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
@@ -664,7 +664,7 @@
           <ng-container *ngIf="splitEans(item.ean) as eans">
             <ng-container *ngIf="eanColumnsNaoContados().length > 0">
               <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
-                <td *ngIf="!isAlpha7() || i === 0">{{ eans[idx] || '-' }}</td>
+                <td>{{ eans[idx] || '-' }}</td>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -685,6 +685,7 @@
         icon="pi pi-file-pdf"
         class="p-button-danger"
         (click)="exportarNaoContadosPdf()"
+        title="Exportar lista de produtos não contados para PDF"
       ></button>
       <button
         pButton
@@ -692,6 +693,7 @@
         icon="pi pi-file-excel"
         class="p-button-success"
         (click)="exportarNaoContadosExcel()"
+        title="Exportar lista de produtos não contados para Excel"
       ></button>
     </div>
   </p-tabPanel>
@@ -699,10 +701,9 @@
 
 <footer class="text-center text-sm">
   <p>
-    <strong>Razão Social: </strong>Inventário EB
-    <strong>CNPJ: </strong>51.390.090/0001-05
-    <strong>Telefone: </strong>(11)99958-5344 <strong>Endereço: </strong>Rua
-    América Central, 285, Parque das Américas, Mauá - SP, 09351-190
+    <strong>Razão Social: </strong>Drogarias Campeã
+    <strong>CNPJ: </strong>21.812.204/0010-98
+    <strong>Endereço: </strong>Rua Santa Mônica, 480, Parque Industrial San José, Cotia-SP, CEP: 06715-865
   </p>
 
        <p>

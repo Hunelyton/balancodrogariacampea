@@ -143,19 +143,9 @@ export class HomeComponent implements OnInit {
     return Array.from({ length: Math.min(12, max) }, (_, i) => i);
   });
   footerText =
-    'Razão Social:EB  Inventário CNPJ: 51.390.090/0001-05 Telefone: (11)99958-5344 Endereço: Rua América Central, 285, Parque das Américas, Mauá - SP, 09351-190';
+    'Razão Social:Drogarias Campeã  CNPJ: 21.812.204/0010-98 Endereço: Rua Santa Mônica, 480, Parque Industrial San José, Cotia-SP, CEP: 06715-865';
 
   private indexedDBService = new IndexedDBService('GestaoBalancoDB', 'CadastroProdutos');
-
-  /**
-   * Com a remoção definitiva da integração com o sistema Alpha7,
-   * todos os fluxos passam a utilizar o formato padrão. Mantemos o
-   * método para evitar alterar o restante do template e da lógica
-   * de exportação, retornando sempre "false".
-   */
-  isAlpha7(): boolean {
-    return false;
-  }
 
   constructor(private messageService: MessageService) { }
   async ngOnInit() {
@@ -182,6 +172,31 @@ export class HomeComponent implements OnInit {
     } catch (error) {
       console.error('Falha ao carregar dados do IndexedDB no boot:', error);
     }
+  }
+
+  onSelectedFiles(event: any) {
+    console.log('Arquivos selecionados:', event?.files ?? event);
+  }
+
+  choose(event: Event, callback: Function) {
+    event?.preventDefault();
+    if (callback && typeof callback === 'function') {
+      callback();
+    }
+  }
+
+  uploadEvent(callback: Function) {
+    if (callback && typeof callback === 'function') {
+      callback();
+    }
+  }
+
+  formatSize(bytes: number): string {
+    if (!bytes) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
   }
 
   async limparDados() {
@@ -347,7 +362,7 @@ export class HomeComponent implements OnInit {
               const parts = this.splitEans(toStringTrim(val));
               if (parts && parts.length) eanValues.push(...parts);
             };
-            const explicitKeys = ['EAN', 'CODIGO_EAN', 'CODIGO DE BARRAS', 'COD_BARRAS'];
+            const explicitKeys = ['EAN 1', 'CODIGO_EAN', 'CODIGO DE BARRAS', 'COD_BARRAS'];
             for (const key of explicitKeys) {
               if (normalized[key] !== undefined && normalized[key] !== '') {
                 toPush(normalized[key]);
@@ -435,7 +450,8 @@ export class HomeComponent implements OnInit {
         });
         console.error('IndexedDB:', error);
         const handledError: any =
-          error && typeof error === 'object' ? error : new Error(String(error));
+
+        error && typeof error === 'object' ? error : new Error(String(error));
         handledError.__handled = true;
         throw handledError;
       });
@@ -467,7 +483,7 @@ export class HomeComponent implements OnInit {
     if (Array.isArray(value)) return value.map(v => String(v).trim()).filter(Boolean);
     if (value === undefined || value === null) return [];
     return String(value)
-      .split(/[;,\n\r]+/)
+      .split(/[;,\s\r\n\t|\/\\]+/)
       .map(v => v.trim())
       .filter(Boolean);
   }
@@ -503,18 +519,64 @@ export class HomeComponent implements OnInit {
       const contagemMap = new Map<string, any>();
 
       this.indexedDBService.getItem('cadastroProdutos').then((cadastroProdutos) => {
+        const cadastroFonte =
+          Array.isArray(this.cadastro()) && this.cadastro().length
+            ? this.cadastro()
+            : (cadastroProdutos || []);
+
         // Indexar por código normalizado e por cada EAN individual
         const codigoMap = new Map<string, any>();
-        (cadastroProdutos || []).forEach((p: any) => {
+        cadastroFonte.forEach((p: any) => {
           const key = normalizarCodigo(p?.codigo);
           if (key) codigoMap.set(key, p);
         });
-        const normalizarEan = (v: any) => String(v ?? '').trim().replace(/\D/g, '');
+        const limparValor = (valor: any) =>
+          String(valor ?? '')
+            .trim()
+            .replace(/^["']+|["']+$/g, '');
+
+        const gerarChaves = (valor: any) => {
+          const bruto = limparValor(valor);
+          const semAcento = bruto
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase();
+          const alfanumerico = semAcento.replace(/[^0-9A-Z]/g, '');
+          const digitos = bruto.replace(/\D/g, '');
+          const digitosSemZero = digitos.replace(/^0+/, '');
+          return {
+            bruto,
+            semAcento,
+            alfanumerico,
+            digitos,
+            digitosSemZero,
+          };
+        };
+        const adicionarChaves = (map: Map<string, any>, produto: any, chaves: (string | undefined)[]) => {
+          chaves
+            .map((c) => (c ?? '').trim())
+            .filter((c) => !!c)
+            .forEach((chave) => map.set(chave, produto));
+        };
+
         const eanMap = new Map<string, any>();
-        (cadastroProdutos || []).forEach((p: any) => {
+        cadastroFonte.forEach((p: any) => {
+          const codigoChaves = gerarChaves(p?.codigo);
+          adicionarChaves(codigoMap, p, [
+            codigoChaves.alfanumerico,
+            codigoChaves.semAcento,
+            codigoChaves.bruto,
+          ]);
+
           this.splitEans(p.ean).forEach((e) => {
-            const key = normalizarEan(e);
-            if (key) eanMap.set(key, p);
+            const chaves = gerarChaves(e);
+            adicionarChaves(eanMap, p, [
+              chaves.digitosSemZero,
+              chaves.digitos,
+              chaves.alfanumerico,
+              chaves.semAcento,
+              chaves.bruto,
+            ]);
           });
         });
 
@@ -527,17 +589,32 @@ export class HomeComponent implements OnInit {
                 .filter((l) => l.trim().length)
                 .forEach((l) => {
                   const [eanValue, qtdeValue, secaoValue, coletorValue, inventariadorValue] = l.split(/[|,;]/);
-                  const raw = (eanValue ?? '').trim();
+                  const raw = limparValor(eanValue);
+                  const chavesEntrada = gerarChaves(raw);
                   const keyCodigo = normalizarCodigo(raw);
-                  const keyEan = normalizarEan(raw);
-                  const secaoLinha = (secaoValue ?? '').trim();
-                  const coletorLinha = (coletorValue ?? '').trim();
-                  const inventariadorLinha = (inventariadorValue ?? '').trim();
+                  const secaoLinha = limparValor(secaoValue);
+                  const coletorLinha = limparValor(coletorValue);
+                  const inventariadorLinha = limparValor(inventariadorValue);
 
-                  const prod = codigoMap.get(keyCodigo) ?? eanMap.get(keyEan);
+                  const prod =
+                    codigoMap.get(keyCodigo) ??
+                    codigoMap.get(chavesEntrada.alfanumerico) ??
+                    codigoMap.get(chavesEntrada.semAcento) ??
+                    codigoMap.get(chavesEntrada.bruto) ??
+                    eanMap.get(chavesEntrada.digitosSemZero) ??
+                    eanMap.get(chavesEntrada.digitos) ??
+                    eanMap.get(chavesEntrada.alfanumerico) ??
+                    eanMap.get(chavesEntrada.semAcento) ??
+                    eanMap.get(chavesEntrada.bruto);
                   const semCadastro = !prod;
                   const contKeyBase = prod ? normalizarCodigo(prod.codigo) : keyCodigo;
-                  const contKey = contKeyBase || keyEan || normalizarCodigo(raw) || raw;
+                  const contKey =
+                    contKeyBase ||
+                    chavesEntrada.digitosSemZero ||
+                    chavesEntrada.digitos ||
+                    chavesEntrada.alfanumerico ||
+                    chavesEntrada.semAcento ||
+                    chavesEntrada.bruto;
 
                   let atual = contagemMap.get(contKey);
                   if (!atual) {
@@ -548,40 +625,46 @@ export class HomeComponent implements OnInit {
                         ? 'PRODUTO NÃO ENCONTRADO NO CADASTRO'
                         : (prod?.descricao ?? ''),
                       fabricante: semCadastro ? '---' : (prod?.fabricante ?? '---'),
-                      secao: semCadastro ? '---' : secaoLinha || '',
+                      secao: semCadastro ? (secaoLinha || '---') : (secaoLinha || prod?.secao || ''),
                       qtdeEscaneada: 0,
                       coletor: coletorLinha,
                       inventariador: inventariadorLinha,
                       semCadastro,
                     };
                   } else {
-                    atual.semCadastro = atual.semCadastro || semCadastro;
+                    if (coletorLinha) {
+                      atual.coletor = coletorLinha;
+                    }
+                    if (inventariadorLinha) {
+                      atual.inventariador = inventariadorLinha;
+                    }
                   }
 
-                  if (semCadastro || atual.semCadastro) {
-                    atual.semCadastro = true;
-                    atual.descricao = 'PRODUTO NÃO ENCONTRADO NO CADASTRO';
-                    atual.fabricante = '---';
-                    atual.secao = '---';
-                    atual.controlado = 'N';
-                  } else if (prod) {
+                  if (prod) {
+                    atual.semCadastro = false;
                     atual.codigo = prod.codigo ?? atual.codigo;
                     atual.ean = prod.ean ?? atual.ean;
                     atual.descricao = prod.descricao ?? atual.descricao ?? '';
                     atual.fabricante = prod.fabricante ?? atual.fabricante ?? '---';
-                    const novaSecao = secaoLinha || prod.secao || '';
-                    if (novaSecao) atual.secao = novaSecao;
+                    if (secaoLinha) {
+                      atual.secao = secaoLinha;
+                    } else if (!atual.secao && prod.secao) {
+                      atual.secao = prod.secao;
+                    }
                     atual.controlado = prod.controlado ?? atual.controlado ?? '';
-                    atual.semCadastro = false;
+                  } else {
+                    atual.semCadastro = true;
+                    atual.descricao = 'PRODUTO NÃO ENCONTRADO NO CADASTRO';
+                    atual.fabricante = '---';
+                    if (secaoLinha) {
+                      atual.secao = secaoLinha;
+                    } else if (!atual.secao) {
+                      atual.secao = '---';
+                    }
+                    atual.controlado = 'N';
                   }
 
                   atual.qtdeEscaneada += Number(qtdeValue) || 0;
-                  if (coletorLinha) {
-                    atual.coletor = coletorLinha;
-                  }
-                  if (inventariadorLinha) {
-                    atual.inventariador = inventariadorLinha;
-                  }
                   contagemMap.set(contKey, atual);
                 });
 
@@ -630,16 +713,13 @@ export class HomeComponent implements OnInit {
     doc.setFont('helvetica', 'bold');
     doc.text('RELATÓRIO DE DIVERGÊNCIA', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
 
-    // Tabela
     autoTable(doc, {
       startY: 25,
       head: [
         [
-          'Empresa',
           'Código',
-          'EAN',
+          'EAN 1',
           'Descrição',
-          'Seção',
           'Custo',
           'Qtde Loja',
           'Qtde Escaneada',
@@ -654,12 +734,9 @@ export class HomeComponent implements OnInit {
           a.descricao.localeCompare(b.descricao)
         )
         .map((d) => [
-
-          d.fabricante ?? '---',
           d.codigo ?? '---',
-          (this.splitEans(d.ean)[0] ?? '---'),
+          this.splitEans(d.ean)[0] ?? '---',
           d.descricao ?? '---',
-          d.secao ?? '---',
           d.custo == null || isNaN(d.custo)
             ? '---'
             : d.custo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
@@ -669,13 +746,13 @@ export class HomeComponent implements OnInit {
           d.valorDiferenca == null || isNaN(d.valorDiferenca)
             ? '---'
             : d.valorDiferenca.toLocaleString('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-            }),
+                style: 'currency',
+                currency: 'BRL',
+              }),
         ]),
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY || 25;
+    const finalY = (doc as any).lastAutoTable?.finalY ?? 25;
 
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
@@ -720,220 +797,6 @@ export class HomeComponent implements OnInit {
     doc.save('divergencias.pdf');
   }
 
-
-  exportarExcel() {
-    const dados = this.divergencias()
-      .slice()
-      .sort((a, b) =>
-        (a.secao ?? '').localeCompare(b.secao ?? '') ||
-        a.descricao.localeCompare(b.descricao)
-      )
-      .map((d) => ({
-        codigo: d.codigo ?? '---',
-        ean: d.ean ?? '---',
-        descricao: d.descricao ?? '---',
-        fabricante: d.fabricante ?? '---',
-        secao: d.secao ?? '---',
-        custo: d.custo == null || isNaN(d.custo) ? '---' : d.custo,
-        qtdeLoja: d.qtdeLoja ?? '---',
-        qtdeEscaneada: d.qtdeEscaneada ?? '---',
-        qtdeDivergente: d.qtdeDivergente ?? '---',
-        valorDiferenca:
-          d.valorDiferenca == null || isNaN(d.valorDiferenca)
-            ? '---'
-            : d.valorDiferenca,
-      }));
-    const ws = XLSX.utils.json_to_sheet(dados, {
-      header: [
-        'codigo',
-        'ean',
-        'descricao',
-        'fabricante',
-        'secao',
-        'custo',
-        'qtdeLoja',
-        'qtdeEscaneada',
-        'qtdeDivergente',
-        'valorDiferenca',
-      ],
-    });
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Divergencias');
-    const excelBuffer: any = XLSX.write(wb, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    const data: Blob = new Blob([excelBuffer], {
-      type: 'application/octet-stream',
-    });
-    FileSaver.saveAs(data, 'Relatório de divergências.xlsx');
-  }
-
-  get totalPositivo(): number {
-    return this.divergenciasFiltradas()
-      .filter((d) => d.valorDiferenca != null && d.valorDiferenca > 0)
-      .reduce((sum, d) => sum + d.valorDiferenca, 0);
-  }
-
-  get totalNegativo(): number {
-    return this.divergenciasFiltradas()
-      .filter((d) => d.valorDiferenca != null && d.valorDiferenca < 0)
-      .reduce((sum, d) => sum + d.valorDiferenca, 0);
-  }
-
-  get diferencaBalanco(): number {
-    return this.totalPositivo + this.totalNegativo;
-  }
-
-  onArquivoSelecionado(event: any): void {
-    console.log('Arquivo selecionado:', event);
-  }
-
-  uploadEvent(callback: Function) {
-    callback();
-  }
-
-  choose(event: Event, callback: Function) {
-    callback();
-  }
-
-  onSelectedFiles(event: any) {
-    console.log('Arquivos selecionados:', event.files);
-  }
-
-  formatSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024,
-      sizes = ['Bytes', 'KB', 'MB', 'GB'],
-      i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  exportarCadastroPdf() {
-    const doc = new jsPDF({ orientation: 'landscape' });
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CADASTRO DE PRODUTOS', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-
-    const isAlpha = this.isAlpha7();
-    const head = isAlpha
-      ? [['ETIQUETA', 'DESCRICAO', 'EAN', 'SALDO', 'CONTROLADO', 'CUSTO_GERENCIAL']]
-      : [['EMPRESA', 'PRODUTO', 'DESCRICAO', 'EAN', 'SALDO', 'CONTROLADO', 'CUSTO_GERENCIAL']];
-    const formatarCusto = (valor: any) =>
-      valor == null || isNaN(valor)
-        ? '---'
-        : Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-    autoTable(doc, {
-      startY: 25,
-      head,
-      body: this.cadastro()
-        .slice()
-        .sort((a, b) => a.descricao.localeCompare(b.descricao))
-        .map((p) =>
-          isAlpha
-            ? [
-                p.codigo,
-                p.descricao,
-                this.splitEans(p.ean)[0] ?? '',
-                p.qtde,
-                p.controlado,
-                formatarCusto(p.custo),
-              ]
-            : [
-                p.fabricante,
-                p.codigo,
-                p.descricao,
-                p.ean,
-                p.qtde,
-                p.controlado,
-                formatarCusto(p.custo),
-              ]
-        ),
-    });
-
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
-
-    doc.save('cadastro.pdf');
-  }
-
-  exportarCadastroExcel() {
-    const isAlpha = this.isAlpha7();
-    const dados = this.cadastro()
-      .slice()
-      .sort((a, b) => a.descricao.localeCompare(b.descricao))
-      .map((p) =>
-        isAlpha
-          ? {
-              ETIQUETA: p.codigo,
-              DESCRICAO: p.descricao,
-              EAN: this.splitEans(p.ean)[0] ?? '',
-              SALDO: p.qtde,
-              CONTROLADO: p.controlado,
-              CUSTO_GERENCIAL: p.custo == null || isNaN(p.custo) ? '---' : p.custo,
-            }
-          : {
-              EMPRESA: p.fabricante,
-              PRODUTO: p.codigo,
-              DESCRICAO: p.descricao,
-              EAN: p.ean,
-              SALDO: p.qtde,
-              CONTROLADO: p.controlado,
-              CUSTO_GERENCIAL: p.custo == null || isNaN(p.custo) ? '---' : p.custo,
-            }
-      );
-
-    const headers = isAlpha
-      ? ['ETIQUETA', 'DESCRICAO', 'EAN', 'SALDO', 'CONTROLADO', 'CUSTO_GERENCIAL']
-      : ['EMPRESA', 'PRODUTO', 'DESCRICAO', 'EAN', 'SALDO', 'CONTROLADO', 'CUSTO_GERENCIAL'];
-    const ws = XLSX.utils.json_to_sheet(dados, { header: headers });
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Cadastro');
-    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    FileSaver.saveAs(data, 'cadastro.xlsx');
-  }
-
-  exportarContagemPdf() {
-    const doc = new jsPDF({ orientation: 'landscape' });
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CONTAGEM DE PRODUTOS', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
-
-    autoTable(doc, {
-      startY: 25,
-      head: [['Código', 'EAN', 'Descrição', 'Seção', 'Quantidade Escaneada', 'Coletor', 'Inventariador']],
-      body: this.contagemDetalhada()
-        .slice()
-        .sort((a, b) => a.descricao.localeCompare(b.descricao))
-        .map((c) => [
-          c.codigo,
-          c.ean,
-          c.descricao,
-          c.secao,
-          c.qtdeEscaneada,
-          c.coletor ?? '',
-          c.inventariador ?? '',
-        ]),
-    });
-
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
-
-    doc.save('contagem.pdf');
-  }
-
   exportarContagemExcel() {
     const dados = this.contagemDetalhada()
       .slice()
@@ -948,7 +811,7 @@ export class HomeComponent implements OnInit {
         inventariador: c.inventariador ?? '',
       }));
     const ws = XLSX.utils.json_to_sheet(dados, {
-      header: ['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada', 'coletor', 'inventariador'],
+      header: ['codigo', 'EAN 1', 'descricao', 'secao', 'qtdeEscaneada', 'coletor', 'inventariador'],
     });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Contagem');
@@ -959,26 +822,15 @@ export class HomeComponent implements OnInit {
 
   exportarContagemTxt() {
     try {
-      const isAlpha = this.isAlpha7();
       const separator = ',';
-      const agora = new Date();
 
       const linhas = this.contagemDetalhada()
         .slice()
         .sort((a, b) => String(a.descricao || '').localeCompare(String(b.descricao || '')))
         .map((c) => {
-          const etiqueta = String(c.codigo ?? '').trim();
           const eanPrincipal = (this.splitEans(c.ean)[0] ?? '').toString();
-          const identificador = isAlpha ? (etiqueta || eanPrincipal) : eanPrincipal;
           const qtde = Number(c.qtdeEscaneada ?? 0);
-
-          if (isAlpha) {
-            const data = this.formatarData(agora);
-            const hora = this.formatarHora(agora);
-            return [data, hora, identificador, qtde].join(separator);
-          }
-
-          return `${identificador}${separator}${qtde}`;
+          return `${eanPrincipal}${separator}${qtde}`;
         });
 
       const conteudo = linhas.length ? linhas.join('\n') + '\n' : '';
@@ -989,23 +841,9 @@ export class HomeComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Erro ao exportar TXT',
-        detail: 'N�o foi poss�vel gerar o arquivo contagem.txt',
+        detail: 'Não foi possível gerar o arquivo contagem.txt',
       });
     }
-  }
-
-  private formatarData(data: Date): string {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}${mes}${dia}`;
-  }
-
-  private formatarHora(data: Date): string {
-    const horas = String(data.getHours()).padStart(2, '0');
-    const minutos = String(data.getMinutes()).padStart(2, '0');
-    const segundos = String(data.getSeconds()).padStart(2, '0');
-    return `${horas}${minutos}${segundos}`;
   }
 
   addProdutoContagem(rawEan: string, rawQtde: string) {
@@ -1128,6 +966,162 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  exportarCadastroPdf() {
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CADASTRO DE PRODUTOS', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+    autoTable(doc, {
+      startY: 25,
+      head: [['Produto', 'EAN', 'Descrição', 'Saldo', 'Controlado', 'Custo Gerencial', 'Empresa', 'Seção']],
+      body: this.cadastro()
+        .slice()
+        .sort((a, b) => a.descricao.localeCompare(b.descricao))
+        .map((p) => [
+          p.codigo ?? '---',
+          this.splitEans(p.ean)[0] ?? '---',
+          p.descricao ?? '---',
+          p.qtde ?? '---',
+          p.controlado ?? '---',
+          p.custo == null || isNaN(p.custo) ? '---' : Number(p.custo).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+          p.fabricante ?? '---',
+          p.secao ?? '---',
+        ]),
+    });
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+    doc.save('cadastro.pdf');
+  }
+
+  exportarCadastroExcel() {
+    const dados = this.cadastro()
+      .slice()
+      .sort((a, b) => a.descricao.localeCompare(b.descricao))
+      .map((p) => ({
+        PRODUTO: p.codigo,
+        'EAN 1': this.splitEans(p.ean)[0] ?? '',
+        DESCRICAO: p.descricao,
+        SALDO: p.qtde,
+        CONTROLADO: p.controlado,
+        'CUSTO GERENCIAL': p.custo == null || isNaN(p.custo) ? '---' : p.custo,
+        EMPRESA: p.fabricante ?? '',
+        SECAO: p.secao ?? '',
+      }));
+    const ws = XLSX.utils.json_to_sheet(dados, {
+      header: ['PRODUTO', 'EAN 1', 'DESCRICAO', 'SALDO', 'CONTROLADO', 'CUSTO GERENCIAL', 'EMPRESA', 'SECAO'],
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Cadastro');
+    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    FileSaver.saveAs(data, 'cadastro.xlsx');
+  }
+
+  exportarContagemPdf() {
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CONTAGEM DE PRODUTOS', doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
+
+    autoTable(doc, {
+      startY: 25,
+      head: [['Produto', 'EAN', 'Descrição', 'Seção', 'Quantidade Escaneada', 'Coletor', 'Inventariador']],
+      body: this.contagemDetalhada()
+        .slice()
+        .sort((a, b) => a.descricao.localeCompare(b.descricao))
+        .map((c) => [
+          c.codigo ?? '---',
+          c.ean ?? '---',
+          c.descricao ?? '---',
+          c.secao ?? '---',
+          c.qtdeEscaneada ?? '---',
+          c.coletor ?? '',
+          c.inventariador ?? '',
+        ]),
+    });
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+    doc.save('contagem.pdf');
+  }
+
+
+  exportarExcel() {
+    const dados = this.divergencias()
+      .slice()
+      .sort((a, b) =>
+        (a.secao ?? '').localeCompare(b.secao ?? '') ||
+        a.descricao.localeCompare(b.descricao)
+      )
+      .map((d) => ({
+        codigo: d.codigo ?? '---',
+        ean1: this.splitEans(d.ean)[0] ?? '---',
+        descricao: d.descricao ?? '---',
+        secao: d.secao ?? '---',
+        custo: d.custo == null || isNaN(d.custo) ? '---' : d.custo,
+        qtdeLoja: d.qtdeLoja ?? '---',
+        qtdeEscaneada: d.qtdeEscaneada ?? '---',
+        qtdeDivergente: d.qtdeDivergente ?? '---',
+        valorDiferenca:
+          d.valorDiferenca == null || isNaN(d.valorDiferenca)
+            ? '---'
+            : d.valorDiferenca,
+      }));
+    const ws = XLSX.utils.json_to_sheet(dados, {
+      header: [
+        'codigo',
+        'ean1',
+        'descricao',
+        'secao',
+        'custo',
+        'qtdeLoja',
+        'qtdeEscaneada',
+        'qtdeDivergente',
+        'valorDiferenca',
+      ],
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Divergencias');
+    const excelBuffer: any = XLSX.write(wb, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+    const data: Blob = new Blob([excelBuffer], {
+      type: 'application/octet-stream',
+    });
+    FileSaver.saveAs(data, 'divergencias.xlsx');
+  }
+
+  get totalPositivo(): number {
+    return this.divergenciasFiltradas()
+      .filter((d) => d.valorDiferenca != null && d.valorDiferenca > 0)
+      .reduce((sum, d) => sum + d.valorDiferenca, 0);
+  }
+
+  get totalNegativo(): number {
+    return this.divergenciasFiltradas()
+      .filter((d) => d.valorDiferenca != null && d.valorDiferenca < 0)
+      .reduce((sum, d) => sum + d.valorDiferenca, 0);
+  }
+
+  get diferencaBalanco(): number {
+    return this.totalPositivo + this.totalNegativo;
+  }
+
   exportarNaoContadosPdf() {
     const doc = new jsPDF({ orientation: 'landscape' });
 
@@ -1176,3 +1170,7 @@ export class HomeComponent implements OnInit {
   }
 
 }
+
+
+
+
