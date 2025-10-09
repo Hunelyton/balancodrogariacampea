@@ -475,7 +475,7 @@
       [value]="divergenciasFiltradas()"
       [paginator]="true"
       [rows]="10"
-      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
+      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'coletor', 'inventariador', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
     >
       <ng-template pTemplate="caption">
         <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
@@ -521,6 +521,11 @@
           <th pSortableColumn="descricao">
             DESCRIÇÃO <p-sortIcon field="descricao" />
           </th>
+          <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
+          <th pSortableColumn="coletor">COLETOR <p-sortIcon field="coletor" /></th>
+          <th pSortableColumn="inventariador">
+            INVENTARIADOR <p-sortIcon field="inventariador" />
+          </th>
           <th pSortableColumn="custo">CUSTO <p-sortIcon field="custo" /></th>
           <th pSortableColumn="qtdeLoja">
             QTDE LOJA <p-sortIcon field="qtdeLoja" />
@@ -541,6 +546,9 @@
           <td>{{ item.codigo }}</td>
           <td>{{ splitEans(item.ean)[0] || '-' }}</td>
           <td>{{ item.descricao }}</td>
+          <td>{{ item.secao || '-' }}</td>
+          <td>{{ item.coletor || '-' }}</td>
+          <td>{{ item.inventariador || '-' }}</td>
           <td>{{ item.custo | currencyOrDash }}</td>
           <td>{{ item.qtdeLoja | valueOrDash }}</td>
           <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
