@@ -252,6 +252,9 @@ export class HomeComponent implements OnInit {
         if (qtdeDivergente !== 0) {
           divergencias.push({
             ...cad,
+            secao: c.secao ?? cad.secao ?? '---',
+            coletor: c.coletor ?? cad.coletor ?? '',
+            inventariador: c.inventariador ?? cad.inventariador ?? '',
             qtdeEscaneada,
             qtdeLoja,
             qtdeDivergente,
@@ -280,6 +283,9 @@ export class HomeComponent implements OnInit {
       divergencias.push({
         ...cad,
         tipo: 'Não contado com estoque',
+        secao: cad.secao ?? '---',
+        coletor: cad.coletor ?? '',
+        inventariador: cad.inventariador ?? '',
         qtdeEscaneada,
         qtdeLoja,
         qtdeDivergente,
@@ -1072,6 +1078,8 @@ export class HomeComponent implements OnInit {
         ean1: this.splitEans(d.ean)[0] ?? '---',
         descricao: d.descricao ?? '---',
         secao: d.secao ?? '---',
+        coletor: d.coletor ?? '',
+        inventariador: d.inventariador ?? '',
         custo: d.custo == null || isNaN(d.custo) ? '---' : d.custo,
         qtdeLoja: d.qtdeLoja ?? '---',
         qtdeEscaneada: d.qtdeEscaneada ?? '---',
@@ -1087,6 +1095,8 @@ export class HomeComponent implements OnInit {
         'ean1',
         'descricao',
         'secao',
+        'coletor',
+        'inventariador',
         'custo',
         'qtdeLoja',
         'qtdeEscaneada',
