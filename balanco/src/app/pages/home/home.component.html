@@ -4,35 +4,35 @@
   class="mb-4 shadow-2 surface-card border-round justify-content-between"
 >
   <div class="flex align-items-center gap-3">
-    <img src="/balanco/src/assets/logodrogariacampea.png" alt="Logo Drogaria Campeã" style="height: 40px;" />
-
-    <span class="text-xl font-bold text-1000"><strong>Drogarias Campeã</strong> - Gerenciador de Balanço</span>
+    <img
+      src="assets/logodrogariacampea.png"
+      alt="Logo Drogaria Campeã"
+      style="height: 40px"
+    />
+    <span class="text-xl font-bold text-1000"
+      ><strong>Drogarias Campeã</strong> - Gerenciador de Balanço</span
+    >
   </div>
+
   <div class="flex gap-2">
-    <button
-      pButton
+    <p-button
       label="Importar Cadastro de Produtos"
       icon="pi pi-file-excel"
-      class="p-button-success"
-      (click)="showCadastroDialog.set(true)"
-      title="Importar Cadastro de Produtos"
-    ></button>
-    <button
-      pButton
+      severity="success"
+      (onClick)="showCadastroDialog.set(true)"
+    ></p-button>
+    <p-button
       label="Importar Contagem"
       icon="pi pi-upload"
-      class="p-button-warning"
-      (click)="showContagemDialog.set(true)"
-      title="Importar Contagem"
-    ></button>
-    <button
-      pButton
+      severity="info"
+      (onClick)="showContagemDialog.set(true)"
+    ></p-button>
+    <p-button
       label="Limpar Dados"
       icon="pi pi-trash"
-      class="p-button-danger"
-      (click)="limparDados()"
-      title="Limpar todos os dados (Cadastro, Contagem e Divergências)"
-    ></button>
+      severity="danger"
+      (onClick)="limparDados()"
+    ></p-button>
   </div>
 </p-toolbar>
 
@@ -45,7 +45,8 @@
   [style]="{ width: '50vw' }"
 >
   <p class="mb-4 text-sm text-600">
-    Importação disponível exclusivamente para arquivos Procfit nos formatos XLS ou XLSX.
+    Importação disponível exclusivamente para arquivos Drogarias Campeã nos formatos XLS
+    ou XLSX.
   </p>
 
   <p-fileUpload
@@ -255,7 +256,7 @@
           <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
             <ng-container *ngFor="let idx of eanIdxs; let i = index">
               <th>
-                {{ 'EAN ' + (i + 1) }}
+                {{ "EAN " + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
@@ -273,7 +274,7 @@
           <ng-container *ngIf="splitEans(prod.ean) as eans">
             <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
               <ng-container *ngFor="let idx of eanIdxs; let i = index">
-                <td>{{ eans[idx] || '-' }}</td>
+                <td>{{ eans[idx] || "-" }}</td>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -306,15 +307,29 @@
 
   <!-- CONTAGEM -->
   <p-tabPanel header="Contagem">
-    <div *ngIf="!contagemDetalhada().length" class="mb-2 flex align-items-center gap-2">
+    <div
+      *ngIf="!contagemDetalhada().length"
+      class="mb-2 flex align-items-center gap-2"
+    >
       <input pInputText placeholder="EAN" #novoEanVazio style="width: 180px" />
-      <input pInputText type="number" min="1" placeholder="Qtde" #novaQtdeVazio style="width: 100px" />
+      <input
+        pInputText
+        type="number"
+        min="1"
+        placeholder="Qtde"
+        #novaQtdeVazio
+        style="width: 100px"
+      />
       <button
         pButton
         label="Adicionar"
         icon="pi pi-plus"
         class="p-button-success"
-        (click)="addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value); novoEanVazio.value=''; novaQtdeVazio.value='';"
+        (click)="
+          addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value);
+          novoEanVazio.value = '';
+          novaQtdeVazio.value = ''
+        "
         title="Adicionar produto à contagem manualmente"
       ></button>
     </div>
@@ -324,28 +339,51 @@
       [value]="contagemFiltrada()"
       [paginator]="true"
       [rows]="10"
-      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'qtdeEscaneada', 'coletor', 'inventariador']"
+      [globalFilterFields]="[
+        'codigo',
+        'ean',
+        'descricao',
+        'secao',
+        'qtdeEscaneada',
+        'coletor',
+        'inventariador'
+      ]"
     >
       <ng-template pTemplate="caption">
-        <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
+        <div
+          class="flex justify-content-between align-items-center gap-3 flex-wrap"
+        >
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input
               pInputText
               type="text"
-              (input)="dtContagem.filterGlobal($any($event.target).value, 'contains')"
+              (input)="
+                dtContagem.filterGlobal($any($event.target).value, 'contains')
+              "
               placeholder="Pesquisar geral"
             />
           </span>
           <div class="flex align-items-center gap-2">
             <input pInputText placeholder="EAN" #novoEan style="width: 180px" />
-            <input pInputText type="number" min="1" placeholder="Qtde" #novaQtde style="width: 100px" />
+            <input
+              pInputText
+              type="number"
+              min="1"
+              placeholder="Qtde"
+              #novaQtde
+              style="width: 100px"
+            />
             <button
               pButton
               label="Adicionar"
               icon="pi pi-plus"
               class="p-button-success"
-              (click)="addProdutoContagem(novoEan.value, novaQtde.value); novoEan.value=''; novaQtde.value='';"
+              (click)="
+                addProdutoContagem(novoEan.value, novaQtde.value);
+                novoEan.value = '';
+                novaQtde.value = ''
+              "
               title="Adicionar produto à contagem manualmente"
             ></button>
           </div>
@@ -357,7 +395,9 @@
                 [ngModel]="mostrarControladosContagem()"
                 (ngModelChange)="mostrarControladosContagem.set($event)"
               ></p-checkbox>
-              <label for="contagem-controlados" class="text-sm">Mostrar controlados</label>
+              <label for="contagem-controlados" class="text-sm"
+                >Mostrar controlados</label
+              >
             </div>
             <div class="flex align-items-center gap-2">
               <p-checkbox
@@ -366,7 +406,9 @@
                 [ngModel]="mostrarNaoCadastradosContagem()"
                 (ngModelChange)="mostrarNaoCadastradosContagem.set($event)"
               ></p-checkbox>
-              <label for="contagem-nao-cadastrados" class="text-sm">Mostrar não cadastrados</label>
+              <label for="contagem-nao-cadastrados" class="text-sm"
+                >Mostrar não cadastrados</label
+              >
             </div>
           </div>
         </div>
@@ -376,10 +418,17 @@
           <th pSortableColumn="codigo">
             PRODUTO <p-sortIcon field="codigo" />
           </th>
-          <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
-            <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
+          <ng-container
+            *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let idx of getEanIndexesWithData(contagemFiltrada());
+                let i = index
+              "
+            >
               <th>
-                {{ 'EAN ' + (i + 1) }}
+                {{ "EAN " + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
@@ -390,7 +439,9 @@
             QUANTIDADE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
           </th>
           <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
-          <th pSortableColumn="coletor">COLETOR <p-sortIcon field="coletor" /></th>
+          <th pSortableColumn="coletor">
+            COLETOR <p-sortIcon field="coletor" />
+          </th>
           <th pSortableColumn="inventariador">
             INVENTARIADOR <p-sortIcon field="inventariador" />
           </th>
@@ -401,9 +452,16 @@
         <tr>
           <td>{{ item.codigo }}</td>
           <ng-container *ngIf="splitEans(item.ean) as eans">
-            <ng-container *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0">
-              <ng-container *ngFor="let idx of getEanIndexesWithData(contagemFiltrada()); let i = index">
-                <td>{{ eans[idx] || '-' }}</td>
+            <ng-container
+              *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0"
+            >
+              <ng-container
+                *ngFor="
+                  let idx of getEanIndexesWithData(contagemFiltrada());
+                  let i = index
+                "
+              >
+                <td>{{ eans[idx] || "-" }}</td>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -421,8 +479,8 @@
             />
           </td>
           <td>{{ item.secao }}</td>
-          <td>{{ item.coletor || '-' }}</td>
-          <td>{{ item.inventariador || '-' }}</td>
+          <td>{{ item.coletor || "-" }}</td>
+          <td>{{ item.inventariador || "-" }}</td>
           <td class="text-center">
             <button
               pButton
@@ -475,16 +533,35 @@
       [value]="divergenciasFiltradas()"
       [paginator]="true"
       [rows]="10"
-      [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'coletor', 'inventariador', 'custo', 'qtdeLoja', 'qtdeEscaneada', 'qtdeDivergente', 'valorDiferenca']"
+      [globalFilterFields]="[
+        'codigo',
+        'ean',
+        'descricao',
+        'secao',
+        'coletor',
+        'inventariador',
+        'custo',
+        'qtdeLoja',
+        'qtdeEscaneada',
+        'qtdeDivergente',
+        'valorDiferenca'
+      ]"
     >
       <ng-template pTemplate="caption">
-        <div class="flex justify-content-between align-items-center gap-3 flex-wrap">
+        <div
+          class="flex justify-content-between align-items-center gap-3 flex-wrap"
+        >
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input
               pInputText
               type="text"
-              (input)="dtDivergencias.filterGlobal($any($event.target).value, 'contains')"
+              (input)="
+                dtDivergencias.filterGlobal(
+                  $any($event.target).value,
+                  'contains'
+                )
+              "
               placeholder="Pesquisar geral"
             />
           </span>
@@ -496,7 +573,9 @@
                 [ngModel]="mostrarControladosDivergencias()"
                 (ngModelChange)="mostrarControladosDivergencias.set($event)"
               ></p-checkbox>
-              <label for="divergencias-controlados" class="text-sm">Mostrar controlados</label>
+              <label for="divergencias-controlados" class="text-sm"
+                >Mostrar controlados</label
+              >
             </div>
             <div class="flex align-items-center gap-2">
               <p-checkbox
@@ -505,7 +584,9 @@
                 [ngModel]="mostrarNaoCadastradosDivergencias()"
                 (ngModelChange)="mostrarNaoCadastradosDivergencias.set($event)"
               ></p-checkbox>
-              <label for="divergencias-nao-cadastrados" class="text-sm">Mostrar não cadastrados</label>
+              <label for="divergencias-nao-cadastrados" class="text-sm"
+                >Mostrar não cadastrados</label
+              >
             </div>
           </div>
         </div>
@@ -515,14 +596,14 @@
           <th pSortableColumn="codigo">
             PRODUTO <p-sortIcon field="codigo" />
           </th>
-          <th pSortableColumn="ean">
-            EAN 1 <p-sortIcon field="ean" />
-          </th>
+          <th pSortableColumn="ean">EAN 1 <p-sortIcon field="ean" /></th>
           <th pSortableColumn="descricao">
             DESCRIÇÃO <p-sortIcon field="descricao" />
           </th>
           <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
-          <th pSortableColumn="coletor">COLETOR <p-sortIcon field="coletor" /></th>
+          <th pSortableColumn="coletor">
+            COLETOR <p-sortIcon field="coletor" />
+          </th>
           <th pSortableColumn="inventariador">
             INVENTARIADOR <p-sortIcon field="inventariador" />
           </th>
@@ -544,11 +625,11 @@
       <ng-template pTemplate="body" let-item>
         <tr>
           <td>{{ item.codigo }}</td>
-          <td>{{ splitEans(item.ean)[0] || '-' }}</td>
+          <td>{{ splitEans(item.ean)[0] || "-" }}</td>
           <td>{{ item.descricao }}</td>
-          <td>{{ item.secao || '-' }}</td>
-          <td>{{ item.coletor || '-' }}</td>
-          <td>{{ item.inventariador || '-' }}</td>
+          <td>{{ item.secao || "-" }}</td>
+          <td>{{ item.coletor || "-" }}</td>
+          <td>{{ item.inventariador || "-" }}</td>
           <td>{{ item.custo | currencyOrDash }}</td>
           <td>{{ item.qtdeLoja | valueOrDash }}</td>
           <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
@@ -641,7 +722,12 @@
             <input
               pInputText
               type="text"
-              (input)="dtNaoContados.filterGlobal($any($event.target).value, 'contains')"
+              (input)="
+                dtNaoContados.filterGlobal(
+                  $any($event.target).value,
+                  'contains'
+                )
+              "
               placeholder="Pesquisar geral"
             />
           </span>
@@ -653,9 +739,11 @@
             PRODUTO <p-sortIcon field="codigo" />
           </th>
           <ng-container *ngIf="eanColumnsNaoContados().length > 0">
-            <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
+            <ng-container
+              *ngFor="let idx of eanColumnsNaoContados(); let i = index"
+            >
               <th>
-                {{ 'EAN ' + (i + 1) }}
+                {{ "EAN " + (i + 1) }}
               </th>
             </ng-container>
           </ng-container>
@@ -671,8 +759,10 @@
           <td>{{ item.codigo }}</td>
           <ng-container *ngIf="splitEans(item.ean) as eans">
             <ng-container *ngIf="eanColumnsNaoContados().length > 0">
-              <ng-container *ngFor="let idx of eanColumnsNaoContados(); let i = index">
-                <td>{{ eans[idx] || '-' }}</td>
+              <ng-container
+                *ngFor="let idx of eanColumnsNaoContados(); let i = index"
+              >
+                <td>{{ eans[idx] || "-" }}</td>
               </ng-container>
             </ng-container>
           </ng-container>
@@ -710,11 +800,11 @@
 <footer class="text-center text-sm">
   <p>
     <strong>Razão Social: </strong>Drogarias Campeã
-    <strong>CNPJ: </strong>21.812.204/0010-98
-    <strong>Endereço: </strong>Rua Santa Mônica, 480, Parque Industrial San José, Cotia-SP, CEP: 06715-865
+    <strong>CNPJ: </strong>21.812.204/0010-98 <strong>Endereço: </strong>Rua
+    Santa Mônica, 480, Parque Industrial San José, Cotia-SP, CEP: 06715-865
   </p>
 
-       <p>
+  <p>
     <strong>Desenvolvido por: </strong>Hunelyton Mendes
     <strong>Telefone: </strong>(13)98119-6498
   </p>
