@@ -200,9 +200,16 @@
 </p-dialog>
 
 <!-- TABS -->
-<p-tabView class="mt-3">
-  <!-- CADASTRO -->
-  <p-tabPanel header="Cadastro de Produtos">
+<p-tabs class="mt-3">
+  <p-tablist>
+    <p-tab value="cadastro">Cadastro de Produtos</p-tab>
+    <p-tab value="contagem">Contagem</p-tab>
+    <p-tab value="divergencias">Divergências</p-tab>
+    <p-tab value="nao-contados">Não Contados com estoque</p-tab>
+  </p-tablist>
+  <p-tabpanels>
+    <!-- CADASTRO -->
+    <p-tabpanel value="cadastro">
     <p-table
       #dtCadastro
       *ngIf="cadastro().length"
@@ -303,10 +310,10 @@
         title="Exportar lista de produtos cadastrados para Excel"
       ></button>
     </div>
-  </p-tabPanel>
+    </p-tabpanel>
 
-  <!-- CONTAGEM -->
-  <p-tabPanel header="Contagem">
+    <!-- CONTAGEM -->
+    <p-tabpanel value="contagem">
     <div
       *ngIf="!contagemDetalhada().length"
       class="mb-2 flex align-items-center gap-2"
@@ -523,10 +530,10 @@
         title="Exportar lista de produtos contados para TXT"
       ></button>
     </div>
-  </p-tabPanel>
+    </p-tabpanel>
 
-  <!-- DIVERGÊNCIAS -->
-  <p-tabPanel header="Divergências">
+    <!-- DIVERGÊNCIAS -->
+    <p-tabpanel value="divergencias">
     <p-table
       #dtDivergencias
       *ngIf="divergencias().length"
@@ -703,10 +710,10 @@
         ></button>
       </div>
     </div>
-  </p-tabPanel>
+    </p-tabpanel>
 
-  <!-- NÃO INVENTARIADOS -->
-  <p-tabPanel header="Não Contados com estoque">
+    <!-- NÃO INVENTARIADOS -->
+    <p-tabpanel value="nao-contados">
     <p-table
       #dtNaoContados
       *ngIf="naoInventariados().length"
@@ -794,8 +801,9 @@
         title="Exportar lista de produtos não contados para Excel"
       ></button>
     </div>
-  </p-tabPanel>
-</p-tabView>
+    </p-tabpanel>
+  </p-tabpanels>
+</p-tabs>
 
 <footer class="text-center text-sm">
   <p>
