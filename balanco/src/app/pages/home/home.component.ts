@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
-import { TabViewModule } from 'primeng/tabview';
+import { TabsModule } from 'primeng/tabs';
 import { CheckboxModule } from 'primeng/checkbox';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -39,7 +39,7 @@ import { IndexedDBService } from '../../services/indexeddb.service';
     ToolbarModule,
     TableModule,
     InputTextModule,
-    TabViewModule,
+    TabsModule,
     ToastModule,
     CheckboxModule,
     FormsModule,
