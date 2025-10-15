@@ -27,6 +27,7 @@
               }
             ],
             "styles": [
+
               "src/styles.scss",
               "src/styles/primeng-theme.css",
               "node_modules/primeflex/primeflex.css",
@@ -90,6 +91,7 @@
               }
             ],
             "styles": [
+
               "src/styles.scss",
               "src/styles/primeng-theme.css",
               "node_modules/primeflex/primeflex.css",
