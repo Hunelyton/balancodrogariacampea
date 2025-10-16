@@ -2,13 +2,14 @@
 
 :root {
   --app-background: radial-gradient(
-      140% 140% at 10% 0%,
-      #2c3a8c 0%,
-      rgba(25, 31, 71, 0.92) 35%,
-      #080d24 75%
+      160% 160% at 20% 0%,
+      #f8fbff 0%,
+      #eef2ff 35%,
+      #dce8ff 65%,
+      #c1d8ff 100%
     )
     fixed;
-  --app-text-color: #eef2ff;
+  --app-text-color: #1f2937;
 
   font-family: 'Inter', 'Sora', 'Segoe UI', system-ui, -apple-system,
     BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
@@ -28,6 +29,15 @@ body {
   min-height: 100vh;
   background: var(--app-background);
   color: var(--app-text-color);
+  display: flex;
+  flex-direction: column;
+}
+
+app-root {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 button,
@@ -38,6 +48,6 @@ textarea {
 }
 
 ::selection {
-  background: rgba(95, 119, 255, 0.35);
-  color: #f8fbff;
+  background: rgba(110, 144, 255, 0.25);
+  color: #1f2937;
 }

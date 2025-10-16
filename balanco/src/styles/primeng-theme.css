@@ -1,25 +1,25 @@
 /* Sakay-inspired PrimeNG theme overrides */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --primary-color: #7c5cff;
-  --primary-color-hover: #6a4dff;
-  --primary-color-active: #5635f5;
-  --primary-contrast-color: #f8fbff;
+  --primary-color: #2563eb;
+  --primary-color-hover: #1d4ed8;
+  --primary-color-active: #1e40af;
+  --primary-contrast-color: #ffffff;
 
-  --surface-color: rgba(16, 23, 52, 0.9);
-  --surface-ground: rgba(6, 11, 27, 0.9);
-  --surface-section: rgba(20, 29, 66, 0.88);
-  --surface-border-color: rgba(148, 163, 255, 0.18);
-  --surface-hover-color: rgba(124, 92, 255, 0.18);
+  --surface-color: rgba(255, 255, 255, 0.88);
+  --surface-ground: rgba(239, 244, 255, 0.86);
+  --surface-section: rgba(241, 245, 255, 0.92);
+  --surface-border-color: rgba(37, 99, 235, 0.12);
+  --surface-hover-color: rgba(37, 99, 235, 0.1);
 
-  --text-color: #eef2ff;
-  --text-secondary-color: rgba(199, 206, 255, 0.78);
-  --focus-ring: 0 0 0 0.2rem rgba(124, 92, 255, 0.35);
+  --text-color: #1f2937;
+  --text-secondary-color: rgba(55, 65, 81, 0.72);
+  --focus-ring: 0 0 0 0.2rem rgba(37, 99, 235, 0.3);
   --radius: 18px;
   --transition: all 0.2s ease-in-out;
-  --shadow-sm: 0 20px 50px rgba(5, 9, 32, 0.55);
-  --shadow-md: 0 32px 80px rgba(5, 8, 28, 0.68);
+  --shadow-sm: 0 20px 40px rgba(148, 163, 184, 0.35);
+  --shadow-md: 0 32px 60px rgba(148, 163, 184, 0.45);
 }
 
 .p-component {
@@ -27,6 +27,7 @@
     BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   color: var(--text-color);
 }
+
 
 .surface-ground {
   background: var(--surface-ground);
@@ -41,14 +42,14 @@
 }
 
 .p-component-overlay {
-  background-color: rgba(3, 6, 18, 0.7);
-  backdrop-filter: blur(10px);
+  background-color: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
 }
 
 /* Toolbar */
 .p-toolbar {
-  background: linear-gradient(135deg, rgba(31, 42, 104, 0.85), rgba(11, 17, 45, 0.92));
-  border: 1px solid rgba(124, 92, 255, 0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(229, 239, 255, 0.95));
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: calc(var(--radius) + 6px);
   box-shadow: var(--shadow-sm);
   padding: 1.1rem 1.5rem;
@@ -62,13 +63,13 @@
   letter-spacing: 0.01em;
   transition: var(--transition);
   box-shadow: none;
-  background: rgba(124, 92, 255, 0.16);
+  background: rgba(37, 99, 235, 0.12);
   color: var(--text-color);
 }
 
 .p-button:not(.p-button-text):enabled:hover {
   transform: translateY(-1px) scale(1.01);
-  box-shadow: 0 10px 30px rgba(68, 38, 170, 0.45);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
 }
 
 .p-button:focus-visible {
@@ -83,24 +84,24 @@
 }
 
 .p-button.p-button-success {
-  background: #18d8a5;
-  color: #001421;
+  background: #22c55e;
+  color: #052e16;
 }
 
 .p-button.p-button-danger {
-  background: #ff5f7a;
-  color: #fff5f8;
+  background: #ef4444;
+  color: #fef2f2;
 }
 
 .p-button.p-button-info {
-  background: #38bdf8;
-  color: #031322;
+  background: #0ea5e9;
+  color: #082f49;
 }
 
 .p-button.p-button-secondary {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(148, 163, 184, 0.16);
   color: var(--text-color);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.35);
 }
 
 .p-button.p-button-text,
@@ -115,34 +116,34 @@
   border-radius: calc(var(--radius) + 6px);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(22px);
+  backdrop-filter: blur(18px);
 }
 
 .p-dialog .p-dialog-header {
-  background: rgba(25, 32, 78, 0.92);
-  border-bottom: 1px solid rgba(124, 92, 255, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
   font-weight: 600;
 }
 
 .p-dialog .p-dialog-content {
   padding: 1.75rem;
-  background: rgba(12, 18, 42, 0.95);
+  background: rgba(249, 250, 255, 0.96);
 }
 
 /* File upload */
 .p-fileupload .p-fileupload-content {
   border-radius: calc(var(--radius) - 2px);
-  border: 1px dashed rgba(148, 163, 255, 0.25);
-  background: rgba(14, 20, 45, 0.8);
+  border: 1px dashed rgba(37, 99, 235, 0.2);
+  background: rgba(241, 245, 255, 0.85);
   color: var(--text-secondary-color);
 }
 
 /* Card */
 .p-card {
-  border: 1px solid rgba(124, 92, 255, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: calc(var(--radius) + 4px);
   box-shadow: var(--shadow-sm);
-  background: linear-gradient(160deg, rgba(15, 23, 52, 0.94), rgba(11, 17, 44, 0.94));
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(230, 239, 255, 0.95));
 }
 
 .p-card .p-card-body {
@@ -151,7 +152,7 @@
 
 /* Divider */
 .p-divider-horizontal:before {
-  border-top: 1px dashed rgba(124, 92, 255, 0.25);
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
 }
 
 .p-divider-content {
@@ -162,14 +163,14 @@
 /* Tabs */
 .p-tabs {
   border-radius: calc(var(--radius) + 6px);
-  background: rgba(12, 19, 48, 0.92);
-  border: 1px solid rgba(148, 163, 255, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   box-shadow: var(--shadow-sm);
 }
 
 .p-tablist {
-  border-bottom: 1px solid rgba(148, 163, 255, 0.18);
-  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(12px);
 }
 
 .p-tablist .p-tab {
@@ -180,7 +181,7 @@
 }
 
 .p-tablist .p-tab[aria-selected='true'] {
-  color: var(--primary-contrast-color);
+  color: var(--primary-color);
   position: relative;
 }
 
@@ -192,7 +193,7 @@
   bottom: 0.35rem;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #7c5cff, #38bdf8);
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
 }
 
 .p-tablist .p-tab:focus-visible {
@@ -202,7 +203,7 @@
 
 .p-tabpanels {
   padding: 1.5rem;
-  background: rgba(8, 13, 32, 0.92);
+  background: rgba(241, 245, 255, 0.92);
 }
 
 /* Inputs */
@@ -211,23 +212,23 @@
 .p-dropdown,
 .p-multiselect {
   border-radius: calc(var(--radius) / 1.7);
-  border: 1px solid rgba(148, 163, 255, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.3);
   transition: var(--transition);
   padding: 0.65rem 0.85rem;
-  background: rgba(8, 13, 32, 0.8);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--text-color);
 }
 
 .p-inputtext::placeholder,
 .p-inputnumber input::placeholder {
-  color: rgba(202, 210, 255, 0.5);
+  color: rgba(148, 163, 184, 0.7);
 }
 
 .p-inputtext:enabled:hover,
 .p-inputnumber input:enabled:hover,
 .p-dropdown:enabled:hover,
 .p-multiselect:enabled:hover {
-  border-color: rgba(124, 92, 255, 0.55);
+  border-color: rgba(37, 99, 235, 0.45);
 }
 
 .p-inputtext:focus,
@@ -248,9 +249,9 @@
 
 .p-checkbox .p-checkbox-box {
   border-radius: 10px;
-  border: 1px solid rgba(148, 163, 255, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.35);
   transition: var(--transition);
-  background: rgba(8, 13, 32, 0.8);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .p-checkbox .p-checkbox-box.p-highlight {
@@ -267,79 +268,79 @@
 .p-toast .p-toast-message {
   border-radius: calc(var(--radius) - 4px);
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(148, 163, 255, 0.22);
-  backdrop-filter: blur(16px);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  backdrop-filter: blur(12px);
 }
 
 .p-toast .p-toast-message-success {
-  background: rgba(12, 255, 184, 0.12);
-  color: #3de1a3;
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
 }
 
 .p-toast .p-toast-message-error {
-  background: rgba(255, 95, 122, 0.12);
-  color: #ff8699;
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
 }
 
 .p-toast .p-toast-message-info {
-  background: rgba(56, 189, 248, 0.12);
-  color: #7ad9ff;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
 }
 
 .p-toast .p-toast-message-warn {
-  background: rgba(255, 199, 95, 0.12);
-  color: #ffde99;
+  background: rgba(250, 204, 21, 0.16);
+  color: #92400e;
 }
 
 /* Table */
 .p-datatable {
   border-radius: calc(var(--radius) + 4px);
-  border: 1px solid rgba(124, 92, 255, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  background: rgba(7, 11, 28, 0.92);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .p-datatable .p-datatable-header,
 .p-datatable .p-datatable-footer {
-  background: rgba(10, 16, 36, 0.88);
+  background: rgba(241, 245, 255, 0.92);
   color: var(--text-secondary-color);
-  border-bottom: 1px solid rgba(148, 163, 255, 0.18);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 .p-datatable .p-datatable-thead > tr > th {
   padding: 0.75rem 1rem;
-  background: rgba(15, 21, 48, 0.9);
-  color: rgba(224, 228, 255, 0.85);
+  background: rgba(229, 239, 255, 0.9);
+  color: #1f2937;
   font-weight: 600;
-  border: 1px solid rgba(148, 163, 255, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.25);
 }
 
 .p-datatable .p-datatable-tbody > tr > td {
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(148, 163, 255, 0.12);
+  border: 1px solid rgba(203, 213, 225, 0.6);
   vertical-align: middle;
 }
 
 .p-datatable .p-datatable-tbody > tr:nth-child(even) {
-  background: rgba(16, 23, 52, 0.45);
+  background: rgba(226, 232, 255, 0.55);
 }
 
 .p-datatable .p-datatable-tbody > tr:hover {
-  background: rgba(124, 92, 255, 0.12);
+  background: rgba(37, 99, 235, 0.12);
 }
 
 .p-datatable .p-paginator {
-  border-top: 1px solid rgba(148, 163, 255, 0.18);
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
   padding: 0.75rem 1rem;
-  background: rgba(10, 16, 36, 0.88);
+  background: rgba(241, 245, 255, 0.92);
 }
 
 /* TabView buttons inside tables */
 .p-tabview-nav {
   display: flex;
   gap: 0.35rem;
-  border-bottom: 1px solid rgba(148, 163, 255, 0.18);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
   padding: 0 0.75rem;
 }
 
@@ -353,18 +354,19 @@
 }
 
 .p-tabview-nav-link.p-highlight {
-  border-color: rgba(148, 163, 255, 0.18);
-  border-bottom-color: rgba(7, 11, 28, 0.92);
-  color: var(--primary-contrast-color);
-  background: rgba(12, 18, 42, 0.95);
+  border-color: rgba(148, 163, 184, 0.25);
+  border-bottom-color: rgba(255, 255, 255, 0.95);
+  color: var(--primary-color);
+  background: rgba(229, 239, 255, 0.95);
 }
 
 /* File upload toolbar */
+
 .p-fileupload-buttonbar {
   display: flex;
   gap: 0.65rem;
-  border: 1px solid rgba(148, 163, 255, 0.2);
-  background: rgba(10, 16, 36, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(241, 245, 255, 0.92);
   border-radius: calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0;
   padding: 0.85rem 1.2rem;
 }
@@ -374,7 +376,7 @@
 }
 
 .p-fileupload-content {
-  background: rgba(8, 13, 32, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   color: var(--text-secondary-color);
 }
 
