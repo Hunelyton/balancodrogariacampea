@@ -162,38 +162,80 @@
 
 /* Tabs */
 .p-tabs {
-  border-radius: calc(var(--radius) + 6px);
-  background: rgba(255, 255, 255, 0.9);
+  position: relative;
+  display: block;
+  border-radius: calc(var(--radius) + 8px);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(148, 163, 184, 0.25);
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.p-tabs::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+      120% 120% at 15% -10%,
+      rgba(37, 99, 235, 0.12),
+      transparent 70%
+    ),
+    radial-gradient(120% 120% at 85% -10%, rgba(14, 165, 233, 0.08), transparent 75%);
+  opacity: 0.8;
+}
+
+.p-tabs > * {
+  position: relative;
+  z-index: 1;
 }
 
 .p-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding: 1rem 1.4rem 0.75rem;
+  margin: 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(229, 239, 255, 0.92));
   backdrop-filter: blur(12px);
 }
 
 .p-tablist .p-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: calc(var(--radius) / 1.6);
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--text-secondary-color);
-  padding: 0.9rem 1.6rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
   transition: var(--transition);
 }
 
-.p-tablist .p-tab[aria-selected='true'] {
+.p-tablist .p-tab:hover {
   color: var(--primary-color);
-  position: relative;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.p-tablist .p-tab[aria-selected='true'] {
+  color: var(--primary-contrast-color);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(14, 165, 233, 0.85));
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.25);
 }
 
 .p-tablist .p-tab[aria-selected='true']::after {
   content: '';
   position: absolute;
-  left: 1.4rem;
-  right: 1.4rem;
-  bottom: 0.35rem;
-  height: 3px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+  inset: 2px;
+  border-radius: calc(var(--radius) / 1.6 - 2px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  pointer-events: none;
 }
 
 .p-tablist .p-tab:focus-visible {
@@ -202,8 +244,83 @@
 }
 
 .p-tabpanels {
-  padding: 1.5rem;
+  padding: 1.75rem;
   background: rgba(241, 245, 255, 0.92);
+}
+
+.p-tabpanels .p-tabpanel {
+  border-radius: calc(var(--radius) + 4px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 24px 45px rgba(148, 163, 184, 0.25);
+  padding: 1.5rem;
+}
+
+.p-tabpanels .p-tabpanel:not(.p-tabpanel-active) {
+  display: none;
+}
+
+.p-tabs.p-tabs-scrollable .p-tablist {
+  overflow-x: auto;
+  padding-right: 1.75rem;
+}
+
+/* Legacy TabView support */
+.p-tabview.p-component {
+  border-radius: calc(var(--radius) + 8px);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.p-tabview-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem 0.6rem;
+  margin: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(229, 239, 255, 0.92));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  backdrop-filter: blur(12px);
+}
+
+.p-tabview-nav li {
+  margin: 0;
+  list-style: none;
+}
+
+.p-tabview-nav-link {
+  border-radius: calc(var(--radius) / 1.6);
+  padding: 0.75rem 1.4rem;
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.p-tabview-nav-link:hover {
+  color: var(--primary-color);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.p-tabview-nav-link.p-highlight {
+  border-color: rgba(37, 99, 235, 0.4);
+  color: var(--primary-contrast-color);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(14, 165, 233, 0.85));
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.25);
+}
+
+.p-tabview-panels {
+  padding: 1.75rem;
+  background: rgba(241, 245, 255, 0.92);
+}
+
+.p-tabview-panel {
+  border-radius: calc(var(--radius) + 4px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 24px 45px rgba(148, 163, 184, 0.25);
+  padding: 1.5rem;
 }
 
 /* Inputs */
@@ -334,30 +451,6 @@
   border-top: 1px solid rgba(148, 163, 184, 0.25);
   padding: 0.75rem 1rem;
   background: rgba(241, 245, 255, 0.92);
-}
-
-/* TabView buttons inside tables */
-.p-tabview-nav {
-  display: flex;
-  gap: 0.35rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-  padding: 0 0.75rem;
-}
-
-.p-tabview-nav-link {
-  border-radius: calc(var(--radius) / 2) calc(var(--radius) / 2) 0 0;
-  padding: 0.7rem 1rem;
-  font-weight: 600;
-  color: var(--text-secondary-color);
-  border: 1px solid transparent;
-  transition: var(--transition);
-}
-
-.p-tabview-nav-link.p-highlight {
-  border-color: rgba(148, 163, 184, 0.25);
-  border-bottom-color: rgba(255, 255, 255, 0.95);
-  color: var(--primary-color);
-  background: rgba(229, 239, 255, 0.95);
 }
 
 /* File upload toolbar */
