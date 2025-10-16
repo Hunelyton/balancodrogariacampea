@@ -1,13 +1,54 @@
 :host {
   display: block;
-  padding-bottom: 5rem;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  padding: 2.5rem 1.5rem 3.5rem;
+}
+
+.app-container {
+  margin: 0 auto;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.app-toolbar {
+  padding: 1.25rem 1.5rem;
+}
+
+.app-card ::ng-deep .p-card-body {
+  padding: 0;
+}
+
+.app-card-content {
+  padding: 1.5rem;
+}
+
+.app-divider {
+  margin: 1.5rem 0 0;
 }
 
 footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #ffffff;
-  padding: 0.5rem 0;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--surface-border-color);
+  color: var(--text-secondary-color);
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+
+  .app-container {
+    gap: 1.5rem;
+  }
+
+  .app-toolbar {
+    align-items: stretch;
+  }
 }

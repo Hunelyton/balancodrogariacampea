@@ -7,6 +7,8 @@
   --primary-color-active: #0369a1;
   --primary-contrast-color: #ffffff;
   --surface-color: #ffffff;
+  --surface-ground: #f8fafc;
+  --surface-section: #eef2ff;
   --surface-border-color: #e5e7eb;
   --surface-hover-color: #f1f5f9;
   --text-color: #0f172a;
@@ -22,6 +24,18 @@
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
     "Helvetica Neue", Arial, sans-serif;
   color: var(--text-color);
+}
+
+.surface-ground {
+  background: var(--surface-ground);
+}
+
+.surface-card {
+  background: var(--surface-color);
+}
+
+.surface-section {
+  background: var(--surface-section);
 }
 
 .p-component-overlay {
@@ -119,6 +133,24 @@
   border: 1px solid var(--surface-border-color);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+}
+
+.p-card {
+  border: 1px solid var(--surface-border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.p-card .p-card-body {
+  padding: 1.5rem;
+}
+
+.p-divider-horizontal:before {
+  border-top: 1px solid var(--surface-border-color);
+}
+
+.p-divider-content {
+  background: transparent;
 }
 
 .p-datatable .p-datatable-header,

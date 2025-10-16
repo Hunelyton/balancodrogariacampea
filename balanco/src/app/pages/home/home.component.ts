@@ -12,6 +12,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TabsModule } from 'primeng/tabs';
 import { CheckboxModule } from 'primeng/checkbox';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import {
@@ -42,6 +44,8 @@ import { IndexedDBService } from '../../services/indexeddb.service';
     TabsModule,
     ToastModule,
     CheckboxModule,
+    CardModule,
+    DividerModule,
     FormsModule,
     CurrencyOrDashPipe,
     ValueOrDashPipe,
