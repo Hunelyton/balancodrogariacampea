@@ -399,6 +399,10 @@ footer {
   color: #1f2937;
 }
 
+:host ::ng-deep .p-paginator .p-paginator-page {
+  margin: 0 0.4rem;
+}
+
 :host ::ng-deep .p-paginator .p-paginator-page.p-highlight {
   background: #2563eb;
   color: #ffffff;
