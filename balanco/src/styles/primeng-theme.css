@@ -272,3 +272,99 @@
     padding: 1rem;
   }
 }
+
+/* Form controls */
+.p-inputtext,
+.p-inputtextarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--surface-border-color);
+  border-radius: var(--radius);
+  background: #ffffff;
+  transition: var(--transition);
+}
+
+.p-inputtext:enabled:hover,
+.p-inputtextarea:enabled:hover {
+  border-color: var(--primary-color-hover);
+}
+
+.p-inputtext:enabled:focus,
+.p-inputtextarea:enabled:focus {
+  border-color: var(--primary-color);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+/* Checkbox */
+.p-checkbox-box {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: calc(var(--radius) / 2);
+  border: 1px solid var(--surface-border-color);
+  transition: var(--transition);
+}
+
+.p-checkbox-box.p-highlight {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-contrast-color);
+  box-shadow: var(--focus-ring);
+}
+
+/* TabView */
+.p-tabview-nav {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--surface-border-color);
+  padding: 0 0.5rem;
+}
+
+.p-tabview-nav li {
+  list-style: none;
+}
+
+.p-tabview-nav-link {
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--text-secondary-color);
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.p-tabview-nav-link.p-highlight {
+  border-color: var(--surface-border-color);
+  border-bottom-color: #ffffff;
+  color: var(--primary-color);
+  background: #ffffff;
+}
+
+/* Toast */
+.p-toast {
+  width: 22rem;
+}
+
+.p-toast-message {
+  border-radius: var(--radius);
+  border: 1px solid var(--surface-border-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* File upload */
+.p-fileupload-buttonbar {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid var(--surface-border-color);
+  background: #f8fafc;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 0.75rem 1rem;
+}
+
+.p-fileupload-row {
+  align-items: center;
+}
+
+.p-fileupload-content {
+  border-radius: 0 0 var(--radius) var(--radius);
+}
