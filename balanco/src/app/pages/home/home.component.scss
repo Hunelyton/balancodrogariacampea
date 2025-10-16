@@ -7,9 +7,8 @@
 .app-shell {
   position: relative;
   min-height: 100vh;
-  padding: 3rem 1.75rem 4rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 }
 
 .app-shell::before {
@@ -25,23 +24,26 @@
 .app-container {
   position: relative;
   z-index: 1;
-  margin: 0 auto;
-  width: min(1280px, 100%);
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 2.25rem;
+  padding: 3rem 2.5rem 4rem;
+  box-sizing: border-box;
 }
 
 .app-toolbar {
   padding: 0;
+  width: 100%;
 }
 
 .sakay-toolbar {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(229, 239, 255, 0.97));
-  border-radius: 24px;
-  padding: 1.4rem 1.75rem !important;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 25px 60px rgba(148, 163, 184, 0.4);
+  border-radius: 0;
+  padding: 1.8rem 2.5rem !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: none;
 }
 
 .sakay-toolbar__brand {
