@@ -1,0 +1,14 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradMetricContagem" x1="8" y1="30" x2="30" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38BDF8" />
+      <stop offset="1" stop-color="#7C5CFF" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="32" height="32" rx="12" fill="rgba(10, 34, 56, 0.6)" />
+  <path d="M13 25V15" stroke="url(#gradMetricContagem)" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M18 25V17" stroke="url(#gradMetricContagem)" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M23 25V13" stroke="url(#gradMetricContagem)" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M28 25V19" stroke="url(#gradMetricContagem)" stroke-width="2.2" stroke-linecap="round" />
+  <path d="M12 27H29" stroke="url(#gradMetricContagem)" stroke-width="2" stroke-linecap="round" />
+</svg>

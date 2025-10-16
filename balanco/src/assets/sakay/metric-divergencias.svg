@@ -1,0 +1,17 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradMetricDivergencias" x1="8" y1="32" x2="32" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF7B96" />
+      <stop offset="1" stop-color="#FFC65F" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="32" height="32" rx="12" fill="rgba(48, 20, 34, 0.6)" />
+  <path
+    d="M20 12L27.7942 25.5C28.1283 26.0774 27.7142 26.8125 27.0203 26.8125H12.9797C12.2858 26.8125 11.8717 26.0774 12.2058 25.5L20 12Z"
+    stroke="url(#gradMetricDivergencias)"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path d="M20 17.5V21.5" stroke="url(#gradMetricDivergencias)" stroke-width="2" stroke-linecap="round" />
+  <circle cx="20" cy="24.5" r="1.25" fill="url(#gradMetricDivergencias)" />
+</svg>
