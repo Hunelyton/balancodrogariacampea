@@ -1,14 +1,7 @@
 @import './styles/primeng-theme.css';
 
 :root {
-  --app-background: radial-gradient(
-      160% 160% at 20% 0%,
-      #f8fbff 0%,
-      #eef2ff 35%,
-      #dce8ff 65%,
-      #c1d8ff 100%
-    )
-    fixed;
+  --app-background: #ffffff;
   --app-text-color: #1f2937;
 
   font-family: 'Inter', 'Sora', 'Segoe UI', system-ui, -apple-system,
@@ -27,7 +20,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--app-background);
+  background: #ffffff;
   color: var(--app-text-color);
   display: flex;
   flex-direction: column;
