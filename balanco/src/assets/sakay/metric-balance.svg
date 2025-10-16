@@ -1,0 +1,25 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradMetricBalance" x1="10" y1="30" x2="30" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#32D5A5" />
+      <stop offset="0.5" stop-color="#38BDF8" />
+      <stop offset="1" stop-color="#7C5CFF" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="32" height="32" rx="12" fill="rgba(16, 23, 52, 0.65)" />
+  <path d="M20 12V23" stroke="url(#gradMetricBalance)" stroke-width="2" stroke-linecap="round" />
+  <path d="M15 15H25" stroke="url(#gradMetricBalance)" stroke-width="2" stroke-linecap="round" />
+  <path
+    d="M12 15L9.5 21C9.19766 21.756 9.76053 22.5625 10.5725 22.5625H14.4275C15.2395 22.5625 15.8023 21.756 15.5 21L13 15H12Z"
+    stroke="url(#gradMetricBalance)"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M28 15L25.5 21C25.1977 21.756 25.7605 22.5625 26.5725 22.5625H30.4275C31.2395 22.5625 31.8023 21.756 31.5 21L29 15H28Z"
+    stroke="url(#gradMetricBalance)"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path d="M17 27H23" stroke="url(#gradMetricBalance)" stroke-width="2" stroke-linecap="round" />
+</svg>

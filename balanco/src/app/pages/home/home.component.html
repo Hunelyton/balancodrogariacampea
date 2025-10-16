@@ -2,41 +2,130 @@
   <div class="app-container">
     <!-- TOPO -->
     <p-toast></p-toast>
-    <p-toolbar
-      class="app-toolbar surface-card border-round shadow-2 justify-content-between"
-    >
-      <div class="flex align-items-center gap-3">
-        <i
-          class="pi pi-box text-primary"
-          aria-hidden="true"
-          style="font-size: 2.5rem"
-        ></i>
-        <span class="text-xl font-bold text-1000">
-          <strong>Drogarias Campeã</strong> - Gerenciador de Balanço
-        </span>
-      </div>
-
-      <div class="flex gap-2 flex-wrap justify-content-end">
-        <p-button
-          label="Importar Cadastro de Produtos"
-          icon="pi pi-file-excel"
-          severity="success"
-          (onClick)="showCadastroDialog.set(true)"
-        ></p-button>
-        <p-button
-          label="Importar Contagem"
-          icon="pi pi-upload"
-          severity="info"
-          (onClick)="showContagemDialog.set(true)"
-        ></p-button>
-        <p-button
-          label="Limpar Dados"
-          icon="pi pi-trash"
-          severity="danger"
-          (onClick)="limparDados()"
-        ></p-button>
-      </div>
+    <p-toolbar class="app-toolbar sakay-toolbar">
+      <ng-template pTemplate="start">
+        <div class="sakay-toolbar__brand">
+          <img
+            src="assets/sakay/logo.svg"
+            alt="Sakay Balanço"
+            class="sakay-toolbar__logo"
+          />
+          <div>
+            <span class="sakay-toolbar__subtitle">Drogarias Campeã</span>
+            <h1 class="sakay-toolbar__title">Painel de Balanço Sakay</h1>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <div class="sakay-toolbar__actions">
+          <button
+            pButton
+            type="button"
+            class="sakay-action sakay-action--success"
+            (click)="showCadastroDialog.set(true)"
+          >
+            <span class="sakay-action__content">
+              <span class="sakay-action__icon">
+                <img src="assets/sakay/import-cadastro.svg" alt="" />
+              </span>
+              <span class="sakay-action__text">
+                <span class="sakay-action__title">Importar cadastro</span>
+                <span class="sakay-action__subtitle">Planilha XLS/XLSX</span>
+              </span>
+            </span>
+          </button>
+          <button
+            pButton
+            type="button"
+            class="sakay-action sakay-action--info"
+            (click)="showContagemDialog.set(true)"
+          >
+            <span class="sakay-action__content">
+              <span class="sakay-action__icon">
+                <img src="assets/sakay/import-contagem.svg" alt="" />
+              </span>
+              <span class="sakay-action__text">
+                <span class="sakay-action__title">Importar contagem</span>
+                <span class="sakay-action__subtitle">Arquivos TXT do coletor</span>
+              </span>
+            </span>
+          </button>
+          <button
+            pButton
+            type="button"
+            class="sakay-action sakay-action--danger"
+            (click)="limparDados()"
+          >
+            <span class="sakay-action__content">
+              <span class="sakay-action__icon">
+                <img src="assets/sakay/reset-dados.svg" alt="" />
+              </span>
+              <span class="sakay-action__text">
+                <span class="sakay-action__title">Limpar dados</span>
+                <span class="sakay-action__subtitle">Reiniciar armazenamento</span>
+              </span>
+            </span>
+          </button>
+        </div>
+      </ng-template>
     </p-toolbar>
+
+    <section class="sakay-metrics">
+      <article class="sakay-metric">
+        <span class="sakay-metric__icon">
+          <img src="assets/sakay/metric-cadastro.svg" alt="Cadastro" />
+        </span>
+        <div class="sakay-metric__data">
+          <span class="sakay-metric__label">Produtos cadastrados</span>
+          <span class="sakay-metric__value">
+            {{ cadastro().length | number: '1.0-0' }}
+          </span>
+          <span class="sakay-metric__hint">Última importação Procfit</span>
+        </div>
+      </article>
+      <article class="sakay-metric">
+        <span class="sakay-metric__icon">
+          <img src="assets/sakay/metric-contagem.svg" alt="Contagem" />
+        </span>
+        <div class="sakay-metric__data">
+          <span class="sakay-metric__label">Itens contados</span>
+          <span class="sakay-metric__value">
+            {{ contagemDetalhada().length | number: '1.0-0' }}
+          </span>
+          <span class="sakay-metric__hint">Somatório de registros escaneados</span>
+        </div>
+      </article>
+      <article class="sakay-metric">
+        <span class="sakay-metric__icon">
+          <img src="assets/sakay/metric-divergencias.svg" alt="Divergências" />
+        </span>
+        <div class="sakay-metric__data">
+          <span class="sakay-metric__label">Divergências ativas</span>
+          <span class="sakay-metric__value">
+            {{ divergencias().length | number: '1.0-0' }}
+          </span>
+          <span class="sakay-metric__hint">Considera filtros aplicados</span>
+        </div>
+      </article>
+      <article class="sakay-metric">
+        <span class="sakay-metric__icon">
+          <img src="assets/sakay/metric-balance.svg" alt="Saldo" />
+        </span>
+        <div class="sakay-metric__data">
+          <span class="sakay-metric__label">Diferença financeira</span>
+          <span
+            class="sakay-metric__value"
+            [ngClass]="{
+              'is-positive': diferencaBalanco >= 0,
+              'is-negative': diferencaBalanco < 0
+            }"
+          >
+            {{ diferencaBalanco | currency: 'BRL':'symbol':'1.2-2' }}
+          </span>
+          <span class="sakay-metric__hint">Total entre ganhos e perdas</span>
+        </div>
+      </article>
+    </section>
 
     <p-card styleClass="app-card shadow-2 surface-card border-round">
       <ng-template pTemplate="content">

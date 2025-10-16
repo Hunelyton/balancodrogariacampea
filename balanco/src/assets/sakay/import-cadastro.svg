@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradImportCadastro" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#32D5A5" />
+      <stop offset="1" stop-color="#38BDF8" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="10" fill="rgba(18, 52, 43, 0.6)" />
+  <path
+    d="M11 9.5C11 8.67157 11.6716 8 12.5 8H18.5858C18.851 8 19.1054 8.10536 19.2929 8.29289L22.7071 11.7071C22.8946 11.8946 23 12.149 23 12.4142V22.5C23 23.3284 22.3284 24 21.5 24H12.5C11.6716 24 11 23.3284 11 22.5V9.5Z"
+    stroke="url(#gradImportCadastro)"
+    stroke-width="1.6"
+    stroke-linejoin="round"
+  />
+  <path d="M18 8V10.75C18 11.4404 18.5596 12 19.25 12H22" stroke="url(#gradImportCadastro)" stroke-width="1.6" />
+  <path
+    d="M9.75 16.75H14.25M12 14L9 17L12 20"
+    stroke="url(#gradImportCadastro)"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

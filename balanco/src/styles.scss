@@ -1,12 +1,22 @@
 @import './styles/primeng-theme.css';
 
 :root {
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
-    'Helvetica Neue', Arial, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+  --app-background: radial-gradient(
+      140% 140% at 10% 0%,
+      #2c3a8c 0%,
+      rgba(25, 31, 71, 0.92) 35%,
+      #080d24 75%
+    )
+    fixed;
+  --app-text-color: #eef2ff;
+
+  font-family: 'Inter', 'Sora', 'Segoe UI', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--app-background);
+  color: var(--app-text-color);
   line-height: 1.5;
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -16,8 +26,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: inherit;
-  color: inherit;
+  background: var(--app-background);
+  color: var(--app-text-color);
 }
 
 button,
@@ -25,4 +35,9 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+::selection {
+  background: rgba(95, 119, 255, 0.35);
+  color: #f8fbff;
 }

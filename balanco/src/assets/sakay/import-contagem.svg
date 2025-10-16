@@ -1,0 +1,33 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradImportContagem" x1="6" y1="26" x2="28" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#38BDF8" />
+      <stop offset="1" stop-color="#7C5CFF" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="10" fill="rgba(10, 34, 56, 0.6)" />
+  <path
+    d="M10 12.5H21.5C22.3284 12.5 23 13.1716 23 14V22.5C23 23.3284 22.3284 24 21.5 24H10.5C9.67157 24 9 23.3284 9 22.5V13.5C9 12.9477 9.44772 12.5 10 12.5Z"
+    stroke="url(#gradImportContagem)"
+    stroke-width="1.6"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M11.5 9H19.5C20.8807 9 22 10.1193 22 11.5V12H11C10.4477 12 10 11.5523 10 11V10.5C10 9.67157 10.6716 9 11.5 9Z"
+    stroke="url(#gradImportContagem)"
+    stroke-width="1.6"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M15.5 17V19.75M13.75 18.375H17.25"
+    stroke="url(#gradImportContagem)"
+    stroke-width="1.6"
+    stroke-linecap="round"
+  />
+  <path
+    d="M20 17.5C21.3807 17.5 22.5 16.3807 22.5 15C22.5 13.6193 21.3807 12.5 20 12.5"
+    stroke="url(#gradImportContagem)"
+    stroke-width="1.6"
+    stroke-linecap="round"
+  />
+</svg>
