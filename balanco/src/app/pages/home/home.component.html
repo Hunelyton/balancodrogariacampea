@@ -828,7 +828,7 @@
         [value]="naoInventariados()"
         [paginator]="true"
         [rows]="10"
-        [globalFilterFields]="['codigo', 'ean', 'descricao', 'secao', 'qtde']"
+        [globalFilterFields]="['codigo', 'ean', 'descricao', 'qtde']"
       >
         <ng-template pTemplate="caption">
           <div
@@ -867,7 +867,6 @@
             <th pSortableColumn="descricao">
               DESCRIÇÃO <p-sortIcon field="descricao" />
             </th>
-            <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
             <th pSortableColumn="qtde">
               QUANTIDADE <p-sortIcon field="qtde" />
             </th>
@@ -886,7 +885,6 @@
               </ng-container>
             </ng-container>
             <td>{{ item.descricao }}</td>
-            <td>{{ item.secao }}</td>
             <td>{{ item.qtde }}</td>
           </tr>
         </ng-template>
