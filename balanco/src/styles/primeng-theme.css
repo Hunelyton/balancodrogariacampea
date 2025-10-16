@@ -387,6 +387,10 @@
   box-shadow: var(--shadow-md);
   border: 1px solid rgba(148, 163, 184, 0.3);
   backdrop-filter: blur(12px);
+  min-height: 4.5rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .p-toast .p-toast-message-success {
