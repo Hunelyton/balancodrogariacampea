@@ -56,7 +56,15 @@
   width: 56px;
   height: 56px;
   border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(59, 130, 246, 0.12);
   box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+}
+
+.sakay-toolbar__logo i {
+  font-size: 1.75rem;
+  color: #1d4ed8;
 }
 
 .sakay-toolbar__title {
@@ -146,9 +154,21 @@
   box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.35);
 }
 
-.sakay-action__icon img {
-  width: 24px;
-  height: 24px;
+.sakay-action__icon i {
+  font-size: 1.35rem;
+  color: #2563eb;
+}
+
+.sakay-action--success .sakay-action__icon i {
+  color: #15803d;
+}
+
+.sakay-action--info .sakay-action__icon i {
+  color: #0369a1;
+}
+
+.sakay-action--danger .sakay-action__icon i {
+  color: #b91c1c;
 }
 
 .sakay-action__text {
