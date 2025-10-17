@@ -1,7 +1,7 @@
 import { Component, signal, computed, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
-import jsPDF from 'jspdf';
+import jsPDF, { ImageProperties } from 'jspdf';
 import autoTable, { Table } from 'jspdf-autotable';
 import { ToolbarModule } from 'primeng/toolbar';
 import { CommonModule } from '@angular/common';
@@ -150,6 +150,8 @@ export class HomeComponent implements OnInit {
     'Razão Social:Drogarias Campeã  CNPJ: 21.812.204/0010-98 Endereço: Rua Santa Mônica, 480, Parque Industrial San José, Cotia-SP, CEP: 06715-865';
 
   private indexedDBService = new IndexedDBService('GestaoBalancoDB', 'CadastroProdutos');
+  private watermarkDataUrl?: string;
+  private watermarkLoading?: Promise<string | undefined>;
 
   constructor(private messageService: MessageService) { }
   async ngOnInit() {
@@ -176,6 +178,8 @@ export class HomeComponent implements OnInit {
     } catch (error) {
       console.error('Falha ao carregar dados do IndexedDB no boot:', error);
     }
+
+    void this.getWatermarkDataUrl();
   }
 
   onSelectedFiles(event: any) {
@@ -715,8 +719,9 @@ export class HomeComponent implements OnInit {
   }
 
 
-  exportarPdf() {
+  async exportarPdf() {
     const doc = new jsPDF({ orientation: 'landscape' });
+    const watermarkDataUrl = await this.getWatermarkDataUrl();
 
     // Título
     doc.setFontSize(16);
@@ -804,7 +809,79 @@ export class HomeComponent implements OnInit {
     doc.setFont('helvetica', 'normal');
     doc.text(this.footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
 
+    if (watermarkDataUrl) {
+      this.applyWatermarkToAllPages(doc, watermarkDataUrl);
+    }
+
     doc.save('divergencias.pdf');
+  }
+
+  private async getWatermarkDataUrl(): Promise<string | undefined> {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    if (this.watermarkDataUrl) {
+      return this.watermarkDataUrl;
+    }
+
+    if (!this.watermarkLoading) {
+      this.watermarkLoading = fetch('assets/logodrogariacampea.png')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Erro ao carregar imagem: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then((blob) => this.readBlobAsDataUrl(blob))
+        .then((dataUrl) => {
+          this.watermarkDataUrl = dataUrl;
+          return dataUrl;
+        })
+        .catch((error) => {
+          console.error('Erro ao carregar a marca d\'água do relatório:', error);
+          return undefined;
+        });
+    }
+
+    return this.watermarkLoading;
+  }
+
+  private readBlobAsDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  private applyWatermarkToAllPages(doc: jsPDF, dataUrl: string) {
+    const totalPages = doc.getNumberOfPages();
+    const currentPage = doc.getCurrentPageInfo().pageNumber;
+    const imageProps = doc.getImageProperties(dataUrl);
+
+    for (let page = 1; page <= totalPages; page++) {
+      doc.setPage(page);
+      this.drawWatermark(doc, dataUrl, imageProps);
+    }
+
+    doc.setPage(currentPage);
+  }
+
+  private drawWatermark(doc: jsPDF, dataUrl: string, imageProps: ImageProperties) {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const scale = Math.min((pageWidth * 0.6) / imageProps.width, (pageHeight * 0.6) / imageProps.height);
+    const watermarkWidth = imageProps.width * scale;
+    const watermarkHeight = imageProps.height * scale;
+    const x = (pageWidth - watermarkWidth) / 2;
+    const y = (pageHeight - watermarkHeight) / 2;
+
+    doc.saveGraphicsState();
+    doc.setGState(doc.GState({ opacity: 0.15 }));
+    doc.addImage(dataUrl, 'PNG', x, y, watermarkWidth, watermarkHeight);
+    doc.restoreGraphicsState();
   }
 
   exportarContagemExcel() {
