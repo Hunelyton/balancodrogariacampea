@@ -51,18 +51,30 @@
 }
 
 .sakay-toolbar__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 56px;
   height: 56px;
+  padding: 0.25rem;
   border-radius: 18px;
-  display: grid;
-  place-items: center;
-  background: rgba(59, 130, 246, 0.12);
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+  border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
-.sakay-toolbar__logo i {
-  font-size: 1.75rem;
-  color: #1d4ed8;
+.sakay-toolbar__logo-image {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+.sakay-toolbar__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .sakay-toolbar__title {
