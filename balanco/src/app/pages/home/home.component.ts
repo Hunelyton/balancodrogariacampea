@@ -2,7 +2,7 @@ import { Component, signal, computed, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import jsPDF, { ImageProperties } from 'jspdf';
-import autoTable, { Table } from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { ToolbarModule } from 'primeng/toolbar';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
