@@ -6,7 +6,11 @@
       <ng-template pTemplate="start">
         <div class="sakay-toolbar__brand">
           <span class="sakay-toolbar__logo" aria-hidden="true">
-            <i class="pi pi-box"></i>
+            <img
+        src="assets/logo32.png"
+        alt="Drogarias Campeã"
+        style="height: 40px; margin-right: 16px"
+      />
           </span>
           <div>
             <span class="sakay-toolbar__subtitle">Drogarias Campeã</span>
@@ -44,7 +48,9 @@
               </span>
               <span class="sakay-action__text">
                 <span class="sakay-action__title">Importar contagem</span>
-                <span class="sakay-action__subtitle">Arquivos TXT do coletor</span>
+                <span class="sakay-action__subtitle"
+                  >Arquivos TXT do coletor</span
+                >
               </span>
             </span>
           </button>
@@ -60,7 +66,9 @@
               </span>
               <span class="sakay-action__text">
                 <span class="sakay-action__title">Limpar dados</span>
-                <span class="sakay-action__subtitle">Reiniciar armazenamento</span>
+                <span class="sakay-action__subtitle"
+                  >Reiniciar armazenamento</span
+                >
               </span>
             </span>
           </button>
@@ -70,43 +78,55 @@
 
     <section class="sakay-metrics">
       <article class="sakay-metric">
-        <span class="sakay-metric__icon sakay-metric__icon--cadastro" aria-hidden="true">
+        <span
+          class="sakay-metric__icon sakay-metric__icon--cadastro"
+          aria-hidden="true"
+        >
           <i class="pi pi-database"></i>
         </span>
         <div class="sakay-metric__data">
           <span class="sakay-metric__label">Produtos cadastrados</span>
           <span class="sakay-metric__value">
-            {{ cadastro().length | number: '1.0-0' }}
+            {{ cadastro().length | number : "1.0-0" }}
           </span>
-          <span class="sakay-metric__hint">Última importação Procfit</span>
+          <span class="sakay-metric__hint">Importação PLanilha</span>
         </div>
       </article>
       <article class="sakay-metric">
-        <span class="sakay-metric__icon sakay-metric__icon--contagem" aria-hidden="true">
+        <span
+          class="sakay-metric__icon sakay-metric__icon--contagem"
+          aria-hidden="true"
+        >
           <i class="pi pi-barcode"></i>
         </span>
         <div class="sakay-metric__data">
           <span class="sakay-metric__label">Itens contados</span>
           <span class="sakay-metric__value">
-            {{ contagemDetalhada().length | number: '1.0-0' }}
+            {{ contagemDetalhada().length | number : "1.0-0" }}
           </span>
-          <span class="sakay-metric__hint">Somatório de registros escaneados</span>
+          <span class="sakay-metric__hint">SKU escaneados</span>
         </div>
       </article>
       <article class="sakay-metric">
-        <span class="sakay-metric__icon sakay-metric__icon--divergencias" aria-hidden="true">
+        <span
+          class="sakay-metric__icon sakay-metric__icon--divergencias"
+          aria-hidden="true"
+        >
           <i class="pi pi-exclamation-triangle"></i>
         </span>
         <div class="sakay-metric__data">
           <span class="sakay-metric__label">Divergências ativas</span>
           <span class="sakay-metric__value">
-            {{ divergencias().length | number: '1.0-0' }}
+            {{ divergencias().length | number : "1.0-0" }}
           </span>
           <span class="sakay-metric__hint">Considera filtros aplicados</span>
         </div>
       </article>
       <article class="sakay-metric">
-        <span class="sakay-metric__icon sakay-metric__icon--financeiro" aria-hidden="true">
+        <span
+          class="sakay-metric__icon sakay-metric__icon--financeiro"
+          aria-hidden="true"
+        >
           <i class="pi pi-wallet"></i>
         </span>
         <div class="sakay-metric__data">
@@ -118,9 +138,9 @@
               'is-negative': diferencaBalanco < 0
             }"
           >
-            {{ diferencaBalanco | currency: 'BRL':'symbol':'1.2-2' }}
+            {{ diferencaBalanco | currency : "BRL" : "symbol" : "1.2-2" }}
           </span>
-          <span class="sakay-metric__hint">Total entre ganhos e perdas</span>
+          <span class="sakay-metric__hint">Total geral de divergência</span>
         </div>
       </article>
     </section>
@@ -130,789 +150,850 @@
         <div class="app-card-content">
           <!-- Diálogo: Importar Cadastro -->
           <p-dialog
-  header="Importar Cadastro de Produtos"
-  [visible]="showCadastroDialog()"
-  (visibleChange)="showCadastroDialog.set($event)"
-  [modal]="true"
-  [style]="{ width: '50vw' }"
->
-  <p class="mb-4 text-sm text-600">
-    Importação disponível exclusivamente para arquivos Drogarias Campeã nos
-    formatos XLS ou XLSX.
-  </p>
+            header="Importar Cadastro de Produtos"
+            [visible]="showCadastroDialog()"
+            (visibleChange)="showCadastroDialog.set($event)"
+            [modal]="true"
+            [style]="{ width: '50vw' }"
+          >
+            <p class="mb-4 text-sm text-600">
+              Importação disponível exclusivamente para arquivos Drogarias
+              Campeã nos formatos XLS ou XLSX.
+            </p>
 
-  <p-fileUpload
-    name="cadastro"
-    [customUpload]="true"
-    accept=".xls,.xlsx"
-    [multiple]="false"
-    [maxFileSize]="5000000"
-    (uploadHandler)="handleCadastroUpload($event)"
-    (onSelect)="onSelectedFiles($event)"
-  >
-    <!-- HEADER -->
-    <ng-template
-      pTemplate="header"
-      let-files
-      let-chooseCallback="chooseCallback"
-      let-clearCallback="clearCallback"
-      let-uploadCallback="uploadCallback"
-    >
-      <div
-        class="flex flex-wrap justify-content-between align-items-center gap-2"
-      >
-        <div class="flex gap-2">
-          <p-button
-            label="Escolher Arquivo"
-            (onClick)="choose($event, chooseCallback)"
-            icon="pi pi-file-excel"
-            [rounded]="true"
-            [outlined]="true"
-          ></p-button>
-          <p-button
-            label="Enviar Arquivo"
-            (onClick)="uploadEvent(uploadCallback)"
-            icon="pi pi-cloud-upload"
-            [rounded]="true"
-            [outlined]="true"
-            severity="success"
-            [disabled]="!files?.length"
-          ></p-button>
-          <p-button
-            label="Limpar Seleção"
-            (onClick)="clearCallback()"
-            icon="pi pi-times"
-            [rounded]="true"
-            [outlined]="true"
-            severity="danger"
-            [disabled]="!files?.length"
-          ></p-button>
-        </div>
-      </div>
-    </ng-template>
+            <p-fileUpload
+              name="cadastro"
+              [customUpload]="true"
+              accept=".xls,.xlsx"
+              [multiple]="false"
+              [maxFileSize]="5000000"
+              (uploadHandler)="handleCadastroUpload($event)"
+              (onSelect)="onSelectedFiles($event)"
+            >
+              <!-- HEADER -->
+              <ng-template
+                pTemplate="header"
+                let-files
+                let-chooseCallback="chooseCallback"
+                let-clearCallback="clearCallback"
+                let-uploadCallback="uploadCallback"
+              >
+                <div
+                  class="flex flex-wrap justify-content-between align-items-center gap-2"
+                >
+                  <div class="flex gap-2">
+                    <p-button
+                      label="Escolher Arquivo"
+                      (onClick)="choose($event, chooseCallback)"
+                      icon="pi pi-file-excel"
+                      [rounded]="true"
+                      [outlined]="true"
+                    ></p-button>
+                    <p-button
+                      label="Enviar Arquivo"
+                      (onClick)="uploadEvent(uploadCallback)"
+                      icon="pi pi-cloud-upload"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="success"
+                      [disabled]="!files?.length"
+                    ></p-button>
+                    <p-button
+                      label="Limpar Seleção"
+                      (onClick)="clearCallback()"
+                      icon="pi pi-times"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="danger"
+                      [disabled]="!files?.length"
+                    ></p-button>
+                  </div>
+                </div>
+              </ng-template>
 
-    <!-- CONTENT -->
-    <ng-template pTemplate="content" let-files>
-      <div *ngIf="files?.length">
-        <h5>Arquivo selecionado:</h5>
-        <ul>
-          <li *ngFor="let file of files">
-            {{ file.name }} - {{ formatSize(file.size) }}
-          </li>
-        </ul>
-      </div>
-    </ng-template>
+              <!-- CONTENT -->
+              <ng-template pTemplate="content" let-files>
+                <div *ngIf="files?.length">
+                  <h5>Arquivo selecionado:</h5>
+                  <ul>
+                    <li *ngFor="let file of files">
+                      {{ file.name }} - {{ formatSize(file.size) }}
+                    </li>
+                  </ul>
+                </div>
+              </ng-template>
 
-    <!-- EMPTY -->
-    <ng-template pTemplate="empty">
-      <div class="flex align-items-center justify-content-center flex-column">
-        <p class="mt-4 mb-0">
-          Arraste e solte o arquivo XLS aqui ou use os botões acima.
-        </p>
-      </div>
-    </ng-template>
-  </p-fileUpload>
+              <!-- EMPTY -->
+              <ng-template pTemplate="empty">
+                <div
+                  class="flex align-items-center justify-content-center flex-column"
+                >
+                  <p class="mt-4 mb-0">
+                    Arraste e solte o arquivo XLS aqui ou use os botões acima.
+                  </p>
+                </div>
+              </ng-template>
+            </p-fileUpload>
           </p-dialog>
 
           <!-- Diálogo: Importar Contagem -->
           <p-dialog
-  header="Importar Contagem"
-  [visible]="showContagemDialog()"
-  (visibleChange)="showContagemDialog.set($event)"
-  [modal]="true"
-  [style]="{ width: '50vw' }"
->
-  <p-fileUpload
-    name="contagem"
-    [customUpload]="true"
-    accept=".txt"
-    [multiple]="true"
-    [maxFileSize]="5000000"
-    (uploadHandler)="handleContagemUpload($event)"
-    (onSelect)="onSelectedFiles($event)"
-  >
-    <ng-template
-      pTemplate="header"
-      let-files
-      let-chooseCallback="chooseCallback"
-      let-clearCallback="clearCallback"
-      let-uploadCallback="uploadCallback"
-    >
-      <div
-        class="flex flex-wrap justify-content-between align-items-center gap-2"
-      >
-        <div class="flex gap-2">
-          <p-button
-            label="Escolher Arquivo"
-            (onClick)="choose($event, chooseCallback)"
-            icon="pi pi-file"
-            [rounded]="true"
-            [outlined]="true"
-          ></p-button>
-          <p-button
-            label="Enviar Arquivo"
-            (onClick)="uploadEvent(uploadCallback)"
-            icon="pi pi-cloud-upload"
-            [rounded]="true"
-            [outlined]="true"
-            severity="success"
-            [disabled]="!files?.length"
-          ></p-button>
-          <p-button
-            label="Limpar Seleção"
-            (onClick)="clearCallback()"
-            icon="pi pi-times"
-            [rounded]="true"
-            [outlined]="true"
-            severity="danger"
-            [disabled]="!files?.length"
-          ></p-button>
-        </div>
-      </div>
-    </ng-template>
+            header="Importar Contagem"
+            [visible]="showContagemDialog()"
+            (visibleChange)="showContagemDialog.set($event)"
+            [modal]="true"
+            [style]="{ width: '50vw' }"
+          >
+            <p-fileUpload
+              name="contagem"
+              [customUpload]="true"
+              accept=".txt"
+              [multiple]="true"
+              [maxFileSize]="5000000"
+              (uploadHandler)="handleContagemUpload($event)"
+              (onSelect)="onSelectedFiles($event)"
+            >
+              <ng-template
+                pTemplate="header"
+                let-files
+                let-chooseCallback="chooseCallback"
+                let-clearCallback="clearCallback"
+                let-uploadCallback="uploadCallback"
+              >
+                <div
+                  class="flex flex-wrap justify-content-between align-items-center gap-2"
+                >
+                  <div class="flex gap-2">
+                    <p-button
+                      label="Escolher Arquivo"
+                      (onClick)="choose($event, chooseCallback)"
+                      icon="pi pi-file"
+                      [rounded]="true"
+                      [outlined]="true"
+                    ></p-button>
+                    <p-button
+                      label="Enviar Arquivo"
+                      (onClick)="uploadEvent(uploadCallback)"
+                      icon="pi pi-cloud-upload"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="success"
+                      [disabled]="!files?.length"
+                    ></p-button>
+                    <p-button
+                      label="Limpar Seleção"
+                      (onClick)="clearCallback()"
+                      icon="pi pi-times"
+                      [rounded]="true"
+                      [outlined]="true"
+                      severity="danger"
+                      [disabled]="!files?.length"
+                    ></p-button>
+                  </div>
+                </div>
+              </ng-template>
 
-    <ng-template pTemplate="content" let-files>
-      <div *ngIf="files?.length">
-        <h5>Arquivo selecionado:</h5>
-        <ul>
-          <li *ngFor="let file of files">
-            {{ file.name }} - {{ formatSize(file.size) }}
-          </li>
-        </ul>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="empty">
-      <div class="flex align-items-center justify-content-center flex-column">
-        <p class="mt-4 mb-0">
-          Arraste e solte o arquivo TXT aqui ou use os botões acima.
-        </p>
-      </div>
-    </ng-template>
-  </p-fileUpload>
+              <ng-template pTemplate="content" let-files>
+                <div *ngIf="files?.length">
+                  <h5>Arquivo selecionado:</h5>
+                  <ul>
+                    <li *ngFor="let file of files">
+                      {{ file.name }} - {{ formatSize(file.size) }}
+                    </li>
+                  </ul>
+                </div>
+              </ng-template>
+              <ng-template pTemplate="empty">
+                <div
+                  class="flex align-items-center justify-content-center flex-column"
+                >
+                  <p class="mt-4 mb-0">
+                    Arraste e solte o arquivo TXT aqui ou use os botões acima.
+                  </p>
+                </div>
+              </ng-template>
+            </p-fileUpload>
           </p-dialog>
 
           <!-- TABS -->
           <p-tabs class="mt-3">
-  <p-tablist>
-    <p-tab value="cadastro">Cadastro de Produtos</p-tab>
-    <p-tab value="contagem">Contagem</p-tab>
-    <p-tab value="divergencias">Divergências</p-tab>
-    <p-tab value="nao-contados">Não Contados com estoque</p-tab>
-  </p-tablist>
+            <p-tablist>
+              <p-tab value="cadastro">Cadastro de Produtos</p-tab>
+              <p-tab value="contagem">Contagem</p-tab>
+              <p-tab value="divergencias">Divergências</p-tab>
+              <p-tab value="nao-contados">Não Contados com estoque</p-tab>
+            </p-tablist>
 
-    <!-- CADASTRO -->
-    <p-tabpanel value="cadastro">
-      <p-table
-        #dtCadastro
-        *ngIf="cadastro().length"
-        [value]="cadastro()"
-        [paginator]="true"
-        [rows]="10"
-        [globalFilterFields]="[
-          'codigo',
-          'ean',
-          'descricao',
-          'fabricante',
-          'controlado',
-          'custo',
-          'qtde'
-        ]"
-      >
-        <ng-template pTemplate="caption">
-          <div class="table-toolbar flex justify-content-between align-items-center flex-wrap gap-3">
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                (input)="
-                  dtCadastro.filterGlobal($any($event.target).value, 'contains')
-                "
-                placeholder="Pesquisar geral"
-              />
-            </span>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="fabricante">
-              EMPRESA <p-sortIcon field="fabricante" />
-            </th>
-            <th pSortableColumn="codigo">
-              PRODUTO <p-sortIcon field="codigo" />
-            </th>
-            <th pSortableColumn="descricao">
-              DESCRICAO <p-sortIcon field="descricao" />
-            </th>
-
-            <th pSortableColumn="qtde">SALDO <p-sortIcon field="qtde" /></th>
-            <th pSortableColumn="controlado">
-              CONTROLADO <p-sortIcon field="controlado" />
-            </th>
-            <th pSortableColumn="custo">
-              CUSTO GERENCIAL <p-sortIcon field="custo" />
-            </th>
-            <ng-container *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs">
-              <ng-container *ngFor="let idx of eanIdxs; let i = index">
-                <th>
-                  {{ "EAN " + (i + 1) }}
-                </th>
-              </ng-container>
-            </ng-container>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-prod>
-          <tr>
-            <td>{{ prod.fabricante }}</td>
-            <td>{{ prod.codigo }}</td>
-            <td>{{ prod.descricao }}</td>
-
-            <td>{{ prod.qtde }}</td>
-            <td>{{ prod.controlado }}</td>
-            <td>{{ prod.custo | currencyOrDash }}</td>
-            <ng-container *ngIf="splitEans(prod.ean) as eans">
-              <ng-container
-                *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs"
+            <!-- CADASTRO -->
+            <p-tabpanel value="cadastro">
+              <p-table
+                #dtCadastro
+                *ngIf="cadastro().length"
+                [value]="cadastro()"
+                [paginator]="true"
+                [rows]="10"
+                [globalFilterFields]="[
+                  'codigo',
+                  'ean',
+                  'descricao',
+                  'fabricante',
+                  'controlado',
+                  'custo',
+                  'qtde'
+                ]"
               >
-                <ng-container *ngFor="let idx of eanIdxs; let i = index">
-                  <td>{{ eans[idx] || "-" }}</td>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-          </tr>
-        </ng-template>
-      </p-table>
+                <ng-template pTemplate="caption">
+                  <div
+                    class="table-toolbar flex justify-content-between align-items-center flex-wrap gap-3"
+                  >
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        (input)="
+                          dtCadastro.filterGlobal(
+                            $any($event.target).value,
+                            'contains'
+                          )
+                        "
+                        placeholder="Pesquisar geral"
+                      />
+                    </span>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="fabricante">
+                      EMPRESA <p-sortIcon field="fabricante" />
+                    </th>
+                    <th pSortableColumn="codigo">
+                      PRODUTO <p-sortIcon field="codigo" />
+                    </th>
+                    <th pSortableColumn="descricao">
+                      DESCRICAO <p-sortIcon field="descricao" />
+                    </th>
 
-      <div
-        *ngIf="cadastro().length"
-        class="mt-3 flex gap-2 justify-content-start"
-      >
-        <button
-          pButton
-          label="Exportar PDF"
-          icon="pi pi-file-pdf"
-          class="p-button-danger"
-          (click)="exportarCadastroPdf()"
-          title="Exportar lista de produtos cadastrados para PDF"
-        ></button>
-        <button
-          pButton
-          label="Exportar Excel"
-          icon="pi pi-file-excel"
-          class="p-button-success"
-          (click)="exportarCadastroExcel()"
-          title="Exportar lista de produtos cadastrados para Excel"
-        ></button>
-      </div>
-      </p-tabpanel>
+                    <th pSortableColumn="qtde">
+                      SALDO <p-sortIcon field="qtde" />
+                    </th>
+                    <th pSortableColumn="controlado">
+                      CONTROLADO <p-sortIcon field="controlado" />
+                    </th>
+                    <th pSortableColumn="custo">
+                      CUSTO GERENCIAL <p-sortIcon field="custo" />
+                    </th>
+                    <ng-container
+                      *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs"
+                    >
+                      <ng-container *ngFor="let idx of eanIdxs; let i = index">
+                        <th>
+                          {{ "EAN " + (i + 1) }}
+                        </th>
+                      </ng-container>
+                    </ng-container>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-prod>
+                  <tr>
+                    <td>{{ prod.fabricante }}</td>
+                    <td>{{ prod.codigo }}</td>
+                    <td>{{ prod.descricao }}</td>
 
-    <!-- CONTAGEM -->
-    <p-tabpanel value="contagem">
-      <div
-        *ngIf="!contagemDetalhada().length"
-        class="mb-2 flex align-items-center gap-2"
-      >
-        <input
-          pInputText
-          placeholder="EAN"
-          #novoEanVazio
-          style="width: 180px"
-        />
-        <input
-          pInputText
-          type="number"
-          min="1"
-          placeholder="Qtde"
-          #novaQtdeVazio
-          style="width: 100px"
-        />
-        <button
-          pButton
-          label="Adicionar"
-          icon="pi pi-plus"
-          class="p-button-success"
-          (click)="
-            addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value);
-            novoEanVazio.value = '';
-            novaQtdeVazio.value = ''
-          "
-          title="Adicionar produto à contagem manualmente"
-        ></button>
-      </div>
-      <p-table
-        #dtContagem
-        *ngIf="contagemDetalhada().length"
-        [value]="contagemFiltrada()"
-        [paginator]="true"
-        [rows]="10"
-        [globalFilterFields]="[
-          'codigo',
-          'ean',
-          'descricao',
-          'secao',
-          'qtdeEscaneada',
-          'coletor',
-          'inventariador'
-        ]"
-      >
-        <ng-template pTemplate="caption">
-          <div
-            class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
-          >
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                (input)="
-                  dtContagem.filterGlobal($any($event.target).value, 'contains')
-                "
-                placeholder="Pesquisar geral"
-              />
-            </span>
-            <div class="table-toolbar__group flex align-items-center gap-2">
-              <input
-                pInputText
-                placeholder="EAN"
-                #novoEan
-                style="width: 180px"
-              />
-              <input
-                pInputText
-                type="number"
-                min="1"
-                placeholder="Qtde"
-                #novaQtde
-                style="width: 100px"
-              />
-              <button
-                pButton
-                label="Adicionar"
-                icon="pi pi-plus"
-                class="p-button-success"
-                (click)="
-                  addProdutoContagem(novoEan.value, novaQtde.value);
-                  novoEan.value = '';
-                  novaQtde.value = ''
-                "
-                title="Adicionar produto à contagem manualmente"
-              ></button>
-            </div>
-            <div class="table-toolbar__toggles flex align-items-center gap-3 flex-wrap">
-              <div class="table-toolbar__toggle flex align-items-center gap-2">
-                <p-checkbox
-                  inputId="contagem-controlados"
-                  [binary]="true"
-                  [ngModel]="mostrarControladosContagem()"
-                  (ngModelChange)="mostrarControladosContagem.set($event)"
-                ></p-checkbox>
-                <label for="contagem-controlados" class="text-sm"
-                  >Mostrar controlados</label
-                >
+                    <td>{{ prod.qtde }}</td>
+                    <td>{{ prod.controlado }}</td>
+                    <td>{{ prod.custo | currencyOrDash }}</td>
+                    <ng-container *ngIf="splitEans(prod.ean) as eans">
+                      <ng-container
+                        *ngIf="getEanIndexesWithData(cadastro()) as eanIdxs"
+                      >
+                        <ng-container
+                          *ngFor="let idx of eanIdxs; let i = index"
+                        >
+                          <td>{{ eans[idx] || "-" }}</td>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+              <div
+                *ngIf="cadastro().length"
+                class="mt-3 flex gap-2 justify-content-start"
+              >
+                <button
+                  pButton
+                  label="Exportar PDF"
+                  icon="pi pi-file-pdf"
+                  class="p-button-danger"
+                  (click)="exportarCadastroPdf()"
+                  title="Exportar lista de produtos cadastrados para PDF"
+                ></button>
+                <button
+                  pButton
+                  label="Exportar Excel"
+                  icon="pi pi-file-excel"
+                  class="p-button-success"
+                  (click)="exportarCadastroExcel()"
+                  title="Exportar lista de produtos cadastrados para Excel"
+                ></button>
               </div>
-              <div class="table-toolbar__toggle flex align-items-center gap-2">
-                <p-checkbox
-                  inputId="contagem-nao-cadastrados"
-                  [binary]="true"
-                  [ngModel]="mostrarNaoCadastradosContagem()"
-                  (ngModelChange)="mostrarNaoCadastradosContagem.set($event)"
-                ></p-checkbox>
-                <label for="contagem-nao-cadastrados" class="text-sm"
-                  >Mostrar não cadastrados</label
-                >
-              </div>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="codigo">
-              PRODUTO <p-sortIcon field="codigo" />
-            </th>
-            <ng-container
-              *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0"
-            >
-              <ng-container
-                *ngFor="
-                  let idx of getEanIndexesWithData(contagemFiltrada());
-                  let i = index
-                "
+            </p-tabpanel>
+
+            <!-- CONTAGEM -->
+            <p-tabpanel value="contagem">
+              <div
+                *ngIf="!contagemDetalhada().length"
+                class="mb-2 flex align-items-center gap-2"
               >
-                <th>
-                  {{ "EAN " + (i + 1) }}
-                </th>
-              </ng-container>
-            </ng-container>
-            <th pSortableColumn="descricao">
-              DESCRIÇÃO <p-sortIcon field="descricao" />
-            </th>
-            <th pSortableColumn="qtdeEscaneada">
-              QUANTIDADE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
-            </th>
-            <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
-            <th pSortableColumn="coletor">
-              COLETOR <p-sortIcon field="coletor" />
-            </th>
-            <th pSortableColumn="inventariador">
-              INVENTARIADOR <p-sortIcon field="inventariador" />
-            </th>
-            <th style="width: 60px"></th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-item>
-          <tr>
-            <td>{{ item.codigo }}</td>
-            <ng-container *ngIf="splitEans(item.ean) as eans">
-              <ng-container
-                *ngIf="getEanIndexesWithData(contagemFiltrada()).length > 0"
-              >
-                <ng-container
-                  *ngFor="
-                    let idx of getEanIndexesWithData(contagemFiltrada());
-                    let i = index
+                <input
+                  pInputText
+                  placeholder="EAN"
+                  #novoEanVazio
+                  style="width: 180px"
+                />
+                <input
+                  pInputText
+                  type="number"
+                  min="1"
+                  placeholder="Qtde"
+                  #novaQtdeVazio
+                  style="width: 100px"
+                />
+                <button
+                  pButton
+                  label="Adicionar"
+                  icon="pi pi-plus"
+                  class="p-button-success"
+                  (click)="
+                    addProdutoContagem(novoEanVazio.value, novaQtdeVazio.value);
+                    novoEanVazio.value = '';
+                    novaQtdeVazio.value = ''
                   "
-                >
-                  <td>{{ eans[idx] || "-" }}</td>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-            <td>{{ item.descricao }}</td>
-            <td>
-              <input
-                id="qtdeInput"
-                #qtdeInput
-                type="number"
-                min="0"
-                [value]="item.qtdeEscaneada"
-                (change)="onQtdeEscaneadaChange(item, qtdeInput.value)"
-                class="input-qtde"
-                placeholder="Digite a quantidade"
-              />
-            </td>
-            <td>{{ item.secao }}</td>
-            <td>{{ item.coletor || "-" }}</td>
-            <td>{{ item.inventariador || "-" }}</td>
-            <td class="text-center">
-              <button
-                pButton
-                icon="pi pi-trash"
-                class="p-button-danger p-button-text p-button-rounded"
-                (click)="removerProdutoContagem(item)"
-                title="Remover produto da contagem"
-              ></button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-
-      <div
-        *ngIf="contagemDetalhada().length"
-        class="mt-3 flex gap-2 justify-content-start"
-      >
-        <button
-          pButton
-          label="Exportar PDF"
-          icon="pi pi-file-pdf"
-          class="p-button-danger"
-          (click)="exportarContagemPdf()"
-          title="Exportar lista de produtos contados para PDF"
-        ></button>
-        <button
-          pButton
-          label="Exportar Excel"
-          icon="pi pi-file-excel"
-          class="p-button-success"
-          (click)="exportarContagemExcel()"
-          title="Exportar lista de produtos contados para Excel"
-        ></button>
-        <button
-          pButton
-          label="Exportar TXT"
-          icon="pi pi-download"
-          class="p-button-secondary"
-          (click)="exportarContagemTxt()"
-          title="Exportar lista de produtos contados para TXT"
-        ></button>
-      </div>
-    </p-tabpanel>
-
-    <!-- DIVERGÊNCIAS -->
-    <p-tabpanel value="divergencias">
-      <p-table
-        #dtDivergencias
-        *ngIf="divergencias().length"
-        [value]="divergenciasFiltradas()"
-        [paginator]="true"
-        [rows]="10"
-        [globalFilterFields]="[
-          'codigo',
-          'ean',
-          'descricao',
-          'secao',
-          'coletor',
-          'inventariador',
-          'custo',
-          'qtdeLoja',
-          'qtdeEscaneada',
-          'qtdeDivergente',
-          'valorDiferenca'
-        ]"
-      >
-        <ng-template pTemplate="caption">
-          <div
-            class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
-          >
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                (input)="
-                  dtDivergencias.filterGlobal(
-                    $any($event.target).value,
-                    'contains'
-                  )
-                "
-                placeholder="Pesquisar geral"
-              />
-            </span>
-            <div
-              class="table-toolbar__toggles flex align-items-center gap-3 flex-wrap"
-            >
-              <div class="table-toolbar__toggle flex align-items-center gap-2">
-                <p-checkbox
-                  inputId="divergencias-controlados"
-                  [binary]="true"
-                  [ngModel]="mostrarControladosDivergencias()"
-                  (ngModelChange)="mostrarControladosDivergencias.set($event)"
-                ></p-checkbox>
-                <label for="divergencias-controlados" class="text-sm"
-                  >Mostrar controlados</label
-                >
+                  title="Adicionar produto à contagem manualmente"
+                ></button>
               </div>
-              <div class="table-toolbar__toggle flex align-items-center gap-2">
-                <p-checkbox
-                  inputId="divergencias-nao-cadastrados"
-                  [binary]="true"
-                  [ngModel]="mostrarNaoCadastradosDivergencias()"
-                  (ngModelChange)="
-                    mostrarNaoCadastradosDivergencias.set($event)
-                  "
-                ></p-checkbox>
-                <label for="divergencias-nao-cadastrados" class="text-sm"
-                  >Mostrar não cadastrados</label
-                >
-              </div>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="codigo">
-              PRODUTO <p-sortIcon field="codigo" />
-            </th>
-            <th pSortableColumn="ean">EAN 1 <p-sortIcon field="ean" /></th>
-            <th pSortableColumn="descricao">
-              DESCRIÇÃO <p-sortIcon field="descricao" />
-            </th>
-            <th pSortableColumn="secao">SEÇÃO <p-sortIcon field="secao" /></th>
-            <th pSortableColumn="coletor">
-              COLETOR <p-sortIcon field="coletor" />
-            </th>
-            <th pSortableColumn="inventariador">
-              INVENTARIADOR <p-sortIcon field="inventariador" />
-            </th>
-            <th pSortableColumn="custo">CUSTO <p-sortIcon field="custo" /></th>
-            <th pSortableColumn="qtdeLoja">
-              QTDE LOJA <p-sortIcon field="qtdeLoja" />
-            </th>
-            <th pSortableColumn="qtdeEscaneada">
-              QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
-            </th>
-            <th pSortableColumn="qtdeDivergente">
-              QTDE DIVERGENTE <p-sortIcon field="qtdeDivergente" />
-            </th>
-            <th pSortableColumn="valorDiferenca">
-              VALOR DIFERENÇA <p-sortIcon field="valorDiferenca" />
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-item>
-          <tr>
-            <td>{{ item.codigo }}</td>
-            <td>{{ splitEans(item.ean)[0] || "-" }}</td>
-            <td>{{ item.descricao }}</td>
-            <td>{{ item.secao || "-" }}</td>
-            <td>{{ item.coletor || "-" }}</td>
-            <td>{{ item.inventariador || "-" }}</td>
-            <td>{{ item.custo | currencyOrDash }}</td>
-            <td>{{ item.qtdeLoja | valueOrDash }}</td>
-            <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
-            <td
-              [ngClass]="{
-                'text-red-500 font-bold': item.qtdeDivergente < 0,
-                'text-blue-500 font-bold': item.qtdeDivergente > 0
-              }"
-            >
-              {{ item.qtdeDivergente | valueOrDash }}
-            </td>
-            <td
-              [ngClass]="{
-                'text-red-500 font-bold': item.valorDiferenca < 0,
-                'text-blue-500 font-bold': item.valorDiferenca > 0
-              }"
-            >
-              {{ item.valorDiferenca | currencyOrDash }}
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-
-      <div *ngIf="divergencias().length" class="mt-3">
-        <table class="w-full">
-          <tr>
-            <td class="font-bold text-blue-500">DIVERGÊNCIAS POSITIVAS</td>
-            <td class="text-blue-500">
-              {{ totalPositivo | currencyOrDash }}
-            </td>
-            <td class="font-bold text-red-500">DIVERGÊNCIAS NEGATIVAS:</td>
-            <td class="text-red-500">
-              {{ totalNegativo | currencyOrDash }}
-            </td>
-            <td
-              class="font-bold"
-              [ngClass]="{
-                'text-blue-500': diferencaBalanco >= 0,
-                'text-red-500': diferencaBalanco < 0
-              }"
-            >
-              TOTAL DIVERGÊNCIAS:
-            </td>
-            <td
-              [ngClass]="{
-                'text-blue-500': diferencaBalanco >= 0,
-                'text-red-500': diferencaBalanco < 0
-              }"
-            >
-              {{ diferencaBalanco | currencyOrDash }}
-            </td>
-          </tr>
-        </table>
-
-        <div class="flex gap-2 justify-content-start mt-2">
-          <button
-            pButton
-            label="Exportar PDF"
-            icon="pi pi-file-pdf"
-            class="p-button-danger"
-            (click)="exportarPdf()"
-            title="Exportar lista de divergências para PDF"
-          ></button>
-          <button
-            pButton
-            label="Exportar Excel"
-            icon="pi pi-file-excel"
-            class="p-button-success"
-            (click)="exportarExcel()"
-            title="Exportar lista de divergências para Excel"
-          ></button>
-        </div>
-      </div>
-    </p-tabpanel>
-
-    <!-- NÃO INVENTARIADOS -->
-    <p-tabpanel value="nao-contados">
-      <p-table
-        #dtNaoContados
-        *ngIf="naoInventariados().length"
-        [value]="naoInventariados()"
-        [paginator]="true"
-        [rows]="10"
-        [globalFilterFields]="['codigo', 'ean', 'descricao', 'qtde']"
-      >
-        <ng-template pTemplate="caption">
-          <div
-            class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
-          >
-            <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                (input)="
-                  dtNaoContados.filterGlobal(
-                    $any($event.target).value,
-                    'contains'
-                  )
-                "
-                placeholder="Pesquisar geral"
-              />
-            </span>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="codigo">
-              PRODUTO <p-sortIcon field="codigo" />
-            </th>
-            <ng-container *ngIf="eanColumnsNaoContados().length > 0">
-              <ng-container
-                *ngFor="let idx of eanColumnsNaoContados(); let i = index"
+              <p-table
+                #dtContagem
+                *ngIf="contagemDetalhada().length"
+                [value]="contagemFiltrada()"
+                [paginator]="true"
+                [rows]="10"
+                [globalFilterFields]="[
+                  'codigo',
+                  'ean',
+                  'descricao',
+                  'secao',
+                  'qtdeEscaneada',
+                  'coletor',
+                  'inventariador'
+                ]"
               >
-                <th>
-                  {{ "EAN " + (i + 1) }}
-                </th>
-              </ng-container>
-            </ng-container>
-            <th pSortableColumn="descricao">
-              DESCRIÇÃO <p-sortIcon field="descricao" />
-            </th>
-            <th pSortableColumn="qtde">
-              QUANTIDADE <p-sortIcon field="qtde" />
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-item>
-          <tr>
-            <td>{{ item.codigo }}</td>
-            <ng-container *ngIf="splitEans(item.ean) as eans">
-              <ng-container *ngIf="eanColumnsNaoContados().length > 0">
-                <ng-container
-                  *ngFor="let idx of eanColumnsNaoContados(); let i = index"
-                >
-                  <td>{{ eans[idx] || "-" }}</td>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-            <td>{{ item.descricao }}</td>
-            <td>{{ item.qtde }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
+                <ng-template pTemplate="caption">
+                  <div
+                    class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
+                  >
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        (input)="
+                          dtContagem.filterGlobal(
+                            $any($event.target).value,
+                            'contains'
+                          )
+                        "
+                        placeholder="Pesquisar geral"
+                      />
+                    </span>
+                    <div
+                      class="table-toolbar__group flex align-items-center gap-2"
+                    >
+                      <input
+                        pInputText
+                        placeholder="EAN"
+                        #novoEan
+                        style="width: 180px"
+                      />
+                      <input
+                        pInputText
+                        type="number"
+                        min="1"
+                        placeholder="Qtde"
+                        #novaQtde
+                        style="width: 100px"
+                      />
+                      <button
+                        pButton
+                        label="Adicionar"
+                        icon="pi pi-plus"
+                        class="p-button-success"
+                        (click)="
+                          addProdutoContagem(novoEan.value, novaQtde.value);
+                          novoEan.value = '';
+                          novaQtde.value = ''
+                        "
+                        title="Adicionar produto à contagem manualmente"
+                      ></button>
+                    </div>
+                    <div
+                      class="table-toolbar__toggles flex align-items-center gap-3 flex-wrap"
+                    >
+                      <div
+                        class="table-toolbar__toggle flex align-items-center gap-2"
+                      >
+                        <p-checkbox
+                          inputId="contagem-controlados"
+                          [binary]="true"
+                          [ngModel]="mostrarControladosContagem()"
+                          (ngModelChange)="
+                            mostrarControladosContagem.set($event)
+                          "
+                        ></p-checkbox>
+                        <label for="contagem-controlados" class="text-sm"
+                          >Mostrar controlados</label
+                        >
+                      </div>
+                      <div
+                        class="table-toolbar__toggle flex align-items-center gap-2"
+                      >
+                        <p-checkbox
+                          inputId="contagem-nao-cadastrados"
+                          [binary]="true"
+                          [ngModel]="mostrarNaoCadastradosContagem()"
+                          (ngModelChange)="
+                            mostrarNaoCadastradosContagem.set($event)
+                          "
+                        ></p-checkbox>
+                        <label for="contagem-nao-cadastrados" class="text-sm"
+                          >Mostrar não cadastrados</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="codigo">
+                      PRODUTO <p-sortIcon field="codigo" />
+                    </th>
+                    <ng-container
+                      *ngIf="
+                        getEanIndexesWithData(contagemFiltrada()).length > 0
+                      "
+                    >
+                      <ng-container
+                        *ngFor="
+                          let idx of getEanIndexesWithData(contagemFiltrada());
+                          let i = index
+                        "
+                      >
+                        <th>
+                          {{ "EAN " + (i + 1) }}
+                        </th>
+                      </ng-container>
+                    </ng-container>
+                    <th pSortableColumn="descricao">
+                      DESCRIÇÃO <p-sortIcon field="descricao" />
+                    </th>
+                    <th pSortableColumn="qtdeEscaneada">
+                      QUANTIDADE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
+                    </th>
+                    <th pSortableColumn="secao">
+                      SEÇÃO <p-sortIcon field="secao" />
+                    </th>
+                    <th pSortableColumn="coletor">
+                      COLETOR <p-sortIcon field="coletor" />
+                    </th>
+                    <th pSortableColumn="inventariador">
+                      INVENTARIADOR <p-sortIcon field="inventariador" />
+                    </th>
+                    <th style="width: 60px"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                  <tr>
+                    <td>{{ item.codigo }}</td>
+                    <ng-container *ngIf="splitEans(item.ean) as eans">
+                      <ng-container
+                        *ngIf="
+                          getEanIndexesWithData(contagemFiltrada()).length > 0
+                        "
+                      >
+                        <ng-container
+                          *ngFor="
+                            let idx of getEanIndexesWithData(
+                              contagemFiltrada()
+                            );
+                            let i = index
+                          "
+                        >
+                          <td>{{ eans[idx] || "-" }}</td>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <td>{{ item.descricao }}</td>
+                    <td>
+                      <input
+                        id="qtdeInput"
+                        #qtdeInput
+                        type="number"
+                        min="0"
+                        [value]="item.qtdeEscaneada"
+                        (change)="onQtdeEscaneadaChange(item, qtdeInput.value)"
+                        class="input-qtde"
+                        placeholder="Digite a quantidade"
+                      />
+                    </td>
+                    <td>{{ item.secao }}</td>
+                    <td>{{ item.coletor || "-" }}</td>
+                    <td>{{ item.inventariador || "-" }}</td>
+                    <td class="text-center">
+                      <button
+                        pButton
+                        icon="pi pi-trash"
+                        class="p-button-danger p-button-text p-button-rounded"
+                        (click)="removerProdutoContagem(item)"
+                        title="Remover produto da contagem"
+                      ></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
 
-      <div
-        *ngIf="naoInventariados().length"
-        class="mt-3 flex gap-2 justify-content-start"
-      >
-        <button
-          pButton
-          label="Exportar PDF"
-          icon="pi pi-file-pdf"
-          class="p-button-danger"
-          (click)="exportarNaoContadosPdf()"
-          title="Exportar lista de produtos não contados para PDF"
-        ></button>
-        <button
-          pButton
-          label="Exportar Excel"
-          icon="pi pi-file-excel"
-          class="p-button-success"
-          (click)="exportarNaoContadosExcel()"
-          title="Exportar lista de produtos não contados para Excel"
-        ></button>
-      </div>
-      </p-tabpanel>
+              <div
+                *ngIf="contagemDetalhada().length"
+                class="mt-3 flex gap-2 justify-content-start"
+              >
+                <button
+                  pButton
+                  label="Exportar PDF"
+                  icon="pi pi-file-pdf"
+                  class="p-button-danger"
+                  (click)="exportarContagemPdf()"
+                  title="Exportar lista de produtos contados para PDF"
+                ></button>
+                <button
+                  pButton
+                  label="Exportar Excel"
+                  icon="pi pi-file-excel"
+                  class="p-button-success"
+                  (click)="exportarContagemExcel()"
+                  title="Exportar lista de produtos contados para Excel"
+                ></button>
+                <button
+                  pButton
+                  label="Exportar TXT"
+                  icon="pi pi-download"
+                  class="p-button-secondary"
+                  (click)="exportarContagemTxt()"
+                  title="Exportar lista de produtos contados para TXT"
+                ></button>
+              </div>
+            </p-tabpanel>
 
+            <!-- DIVERGÊNCIAS -->
+            <p-tabpanel value="divergencias">
+              <p-table
+                #dtDivergencias
+                *ngIf="divergencias().length"
+                [value]="divergenciasFiltradas()"
+                [paginator]="true"
+                [rows]="10"
+                [globalFilterFields]="[
+                  'codigo',
+                  'ean',
+                  'descricao',
+                  'secao',
+                  'coletor',
+                  'inventariador',
+                  'custo',
+                  'qtdeLoja',
+                  'qtdeEscaneada',
+                  'qtdeDivergente',
+                  'valorDiferenca'
+                ]"
+              >
+                <ng-template pTemplate="caption">
+                  <div
+                    class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
+                  >
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        (input)="
+                          dtDivergencias.filterGlobal(
+                            $any($event.target).value,
+                            'contains'
+                          )
+                        "
+                        placeholder="Pesquisar geral"
+                      />
+                    </span>
+                    <div
+                      class="table-toolbar__toggles flex align-items-center gap-3 flex-wrap"
+                    >
+                      <div
+                        class="table-toolbar__toggle flex align-items-center gap-2"
+                      >
+                        <p-checkbox
+                          inputId="divergencias-controlados"
+                          [binary]="true"
+                          [ngModel]="mostrarControladosDivergencias()"
+                          (ngModelChange)="
+                            mostrarControladosDivergencias.set($event)
+                          "
+                        ></p-checkbox>
+                        <label for="divergencias-controlados" class="text-sm"
+                          >Mostrar controlados</label
+                        >
+                      </div>
+                      <div
+                        class="table-toolbar__toggle flex align-items-center gap-2"
+                      >
+                        <p-checkbox
+                          inputId="divergencias-nao-cadastrados"
+                          [binary]="true"
+                          [ngModel]="mostrarNaoCadastradosDivergencias()"
+                          (ngModelChange)="
+                            mostrarNaoCadastradosDivergencias.set($event)
+                          "
+                        ></p-checkbox>
+                        <label
+                          for="divergencias-nao-cadastrados"
+                          class="text-sm"
+                          >Mostrar não cadastrados</label
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="codigo">
+                      PRODUTO <p-sortIcon field="codigo" />
+                    </th>
+                    <th pSortableColumn="ean">
+                      EAN 1 <p-sortIcon field="ean" />
+                    </th>
+                    <th pSortableColumn="descricao">
+                      DESCRIÇÃO <p-sortIcon field="descricao" />
+                    </th>
+                    <th pSortableColumn="secao">
+                      SEÇÃO <p-sortIcon field="secao" />
+                    </th>
+                    <th pSortableColumn="coletor">
+                      COLETOR <p-sortIcon field="coletor" />
+                    </th>
+                    <th pSortableColumn="inventariador">
+                      INVENTARIADOR <p-sortIcon field="inventariador" />
+                    </th>
+                    <th pSortableColumn="custo">
+                      CUSTO <p-sortIcon field="custo" />
+                    </th>
+                    <th pSortableColumn="qtdeLoja">
+                      QTDE LOJA <p-sortIcon field="qtdeLoja" />
+                    </th>
+                    <th pSortableColumn="qtdeEscaneada">
+                      QTDE ESCANEADA <p-sortIcon field="qtdeEscaneada" />
+                    </th>
+                    <th pSortableColumn="qtdeDivergente">
+                      QTDE DIVERGENTE <p-sortIcon field="qtdeDivergente" />
+                    </th>
+                    <th pSortableColumn="valorDiferenca">
+                      VALOR DIFERENÇA <p-sortIcon field="valorDiferenca" />
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                  <tr>
+                    <td>{{ item.codigo }}</td>
+                    <td>{{ splitEans(item.ean)[0] || "-" }}</td>
+                    <td>{{ item.descricao }}</td>
+                    <td>{{ item.secao || "-" }}</td>
+                    <td>{{ item.coletor || "-" }}</td>
+                    <td>{{ item.inventariador || "-" }}</td>
+                    <td>{{ item.custo | currencyOrDash }}</td>
+                    <td>{{ item.qtdeLoja | valueOrDash }}</td>
+                    <td>{{ item.qtdeEscaneada | valueOrDash }}</td>
+                    <td
+                      [ngClass]="{
+                        'text-red-500 font-bold': item.qtdeDivergente < 0,
+                        'text-blue-500 font-bold': item.qtdeDivergente > 0
+                      }"
+                    >
+                      {{ item.qtdeDivergente | valueOrDash }}
+                    </td>
+                    <td
+                      [ngClass]="{
+                        'text-red-500 font-bold': item.valorDiferenca < 0,
+                        'text-blue-500 font-bold': item.valorDiferenca > 0
+                      }"
+                    >
+                      {{ item.valorDiferenca | currencyOrDash }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+              <div *ngIf="divergencias().length" class="mt-3">
+                <table class="w-full">
+                  <tr>
+                    <td class="font-bold text-blue-500">
+                      DIVERGÊNCIAS POSITIVAS
+                    </td>
+                    <td class="text-blue-500">
+                      {{ totalPositivo | currencyOrDash }}
+                    </td>
+                    <td class="font-bold text-red-500">
+                      DIVERGÊNCIAS NEGATIVAS:
+                    </td>
+                    <td class="text-red-500">
+                      {{ totalNegativo | currencyOrDash }}
+                    </td>
+                    <td
+                      class="font-bold"
+                      [ngClass]="{
+                        'text-blue-500': diferencaBalanco >= 0,
+                        'text-red-500': diferencaBalanco < 0
+                      }"
+                    >
+                      TOTAL DIVERGÊNCIAS:
+                    </td>
+                    <td
+                      [ngClass]="{
+                        'text-blue-500': diferencaBalanco >= 0,
+                        'text-red-500': diferencaBalanco < 0
+                      }"
+                    >
+                      {{ diferencaBalanco | currencyOrDash }}
+                    </td>
+                  </tr>
+                </table>
+
+                <div class="flex gap-2 justify-content-start mt-2">
+                  <button
+                    pButton
+                    label="Exportar PDF"
+                    icon="pi pi-file-pdf"
+                    class="p-button-danger"
+                    (click)="exportarPdf()"
+                    title="Exportar lista de divergências para PDF"
+                  ></button>
+                  <button
+                    pButton
+                    label="Exportar Excel"
+                    icon="pi pi-file-excel"
+                    class="p-button-success"
+                    (click)="exportarExcel()"
+                    title="Exportar lista de divergências para Excel"
+                  ></button>
+                </div>
+              </div>
+            </p-tabpanel>
+
+            <!-- NÃO INVENTARIADOS -->
+            <p-tabpanel value="nao-contados">
+              <p-table
+                #dtNaoContados
+                *ngIf="naoInventariados().length"
+                [value]="naoInventariados()"
+                [paginator]="true"
+                [rows]="10"
+                [globalFilterFields]="['codigo', 'ean', 'descricao', 'qtde']"
+              >
+                <ng-template pTemplate="caption">
+                  <div
+                    class="table-toolbar flex justify-content-between align-items-center gap-3 flex-wrap"
+                  >
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        (input)="
+                          dtNaoContados.filterGlobal(
+                            $any($event.target).value,
+                            'contains'
+                          )
+                        "
+                        placeholder="Pesquisar geral"
+                      />
+                    </span>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="codigo">
+                      PRODUTO <p-sortIcon field="codigo" />
+                    </th>
+                    <ng-container *ngIf="eanColumnsNaoContados().length > 0">
+                      <ng-container
+                        *ngFor="
+                          let idx of eanColumnsNaoContados();
+                          let i = index
+                        "
+                      >
+                        <th>
+                          {{ "EAN " + (i + 1) }}
+                        </th>
+                      </ng-container>
+                    </ng-container>
+                    <th pSortableColumn="descricao">
+                      DESCRIÇÃO <p-sortIcon field="descricao" />
+                    </th>
+                    <th pSortableColumn="qtde">
+                      QUANTIDADE <p-sortIcon field="qtde" />
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                  <tr>
+                    <td>{{ item.codigo }}</td>
+                    <ng-container *ngIf="splitEans(item.ean) as eans">
+                      <ng-container *ngIf="eanColumnsNaoContados().length > 0">
+                        <ng-container
+                          *ngFor="
+                            let idx of eanColumnsNaoContados();
+                            let i = index
+                          "
+                        >
+                          <td>{{ eans[idx] || "-" }}</td>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+                    <td>{{ item.descricao }}</td>
+                    <td>{{ item.qtde }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+              <div
+                *ngIf="naoInventariados().length"
+                class="mt-3 flex gap-2 justify-content-start"
+              >
+                <button
+                  pButton
+                  label="Exportar PDF"
+                  icon="pi pi-file-pdf"
+                  class="p-button-danger"
+                  (click)="exportarNaoContadosPdf()"
+                  title="Exportar lista de produtos não contados para PDF"
+                ></button>
+                <button
+                  pButton
+                  label="Exportar Excel"
+                  icon="pi pi-file-excel"
+                  class="p-button-success"
+                  (click)="exportarNaoContadosExcel()"
+                  title="Exportar lista de produtos não contados para Excel"
+                ></button>
+              </div>
+            </p-tabpanel>
           </p-tabs>
         </div>
       </ng-template>
